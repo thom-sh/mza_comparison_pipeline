@@ -83,16 +83,16 @@ CMAP_ZONING = get_cmap(COLOR_MAP_ZONING)
 
 COLORS_ROOMTYPE = ['#1f77b4',   #Bedroom
                    '#e6550d',   #Livingroom
-                   '#fd8d3c',   #Kitchen
+                   "#079188",   #Kitchen
                    '#fdae6b',   #Dining
-                   '#fdd0a2',   #Corridor
+                   "#8a5015",   #Corridor
                    '#72246c',   #Stairs
-                   '#5254a3',   #Storeroom
+                   "#ffcc00",   #Storeroom
                    '#6b6ecf',   #Bathroom
                    '#2ca02c',   #Balcony
                    '#000000',   #Structure
                    '#ffc000',   #Door
-                   '#98df8a',   #Entrance Door
+                   "#500204",   #Entrance Door
                    '#d62728']   #Window
 
 COLOR_MAP_ROOMTYPE = mcolors.ListedColormap(COLORS_ROOMTYPE)

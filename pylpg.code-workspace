@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "../pylpg"
+		},
+		{
+			"path": "../TEASER"
+		},
+		{
+			"path": "../rom_auto_multizoning"
+		},
+		{
+			"path": "../AixLib"
+		},
+		{
+			"path": "../rom_auto_multizoning_1"
+		},
+		{
+			"name": "msd",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
