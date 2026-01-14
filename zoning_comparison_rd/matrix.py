@@ -399,7 +399,7 @@ def evaluate_building(ID, GT_BASE, PRED_PATH, heatmap=True):
     plot_similarity_scores(ID, metrics)
 
     # ===== CSV EXPORT =====
-    output_path = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\gml_msd\comparison_output"
+    output_path = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output"
     csv_region_path = os.path.join(output_path, f"building_{ID}_region_metrics.csv")
     csv_global_path = os.path.join(output_path, f"building_{ID}_global_stats.csv")
     export_region_metrics_to_csv(metrics, csv_region_path)
@@ -414,13 +414,13 @@ def evaluate_building(ID, GT_BASE, PRED_PATH, heatmap=True):
 # ---------------------------------------------------------------
 if __name__ == "__main__":
 
-    SWISS_DATASET_ROOT = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
-    PREDICTED_FOLDER   = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\gml_msd\building_data"
+    SWISS_DATASET_ROOT = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
+    PREDICTED_FOLDER   = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\building_data"
 
-    building_ids = [68, 75, 553, 108, 124, 154, 176, 329, 341, 343, 367, 405, 443, 447, 461, 463, 467, 474, 477, 496, 524, 546, 559, 613, 696, 803, 807, 974, 993, 1261]
+    building_ids = [2]
 
     for bid in building_ids:
-        GT_BASE = os.path.join(SWISS_DATASET_ROOT, "graph_out", f"{bid}.pickle")
+        GT_BASE = os.path.join(SWISS_DATASET_ROOT, f"{bid}.pickle")
         PRED_PATH = os.path.join(PREDICTED_FOLDER, f"building_data_{bid}.pkl")
 
         evaluate_building(bid, GT_BASE, PRED_PATH, heatmap=True)

@@ -13,14 +13,15 @@ from utils_apt import load_pickle
 from constants1 import ROOM_NAMES, CMAP_ROOMTYPE
 
 # === PATH SETUP ===
-datapath = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
+datapath = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
 p = {
     "struct_in": os.path.join(datapath, "struct_in"),
     "graph_out": os.path.join(datapath, "graph_out"),
 }
 
 # === CHOOSE SAMPLE ID ===
-i = [1588, 1602, 1663, 1686, 1939, 1943, 1956, 1972, 1996, 2075, 2097, 2244, 2258, 2389, 2538, 2542, 2751, 2894, 3451, 3594, 5443] # change as needed
+# i = [1588, 1602, 1663, 1686, 1939, 1943, 1956, 1972, 1996, 2075, 2097, 2244, 2258, 2389, 2538, 2542, 2751, 2894, 3451, 3594, 5443] # change as needed
+i = [8562]
 
 for ID in i:
     # === LOAD FILES ===
