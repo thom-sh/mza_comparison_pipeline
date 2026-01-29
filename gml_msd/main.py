@@ -11,7 +11,7 @@ from gml_footprint_replacer3 import replace_building_footprint
 # === CONFIGURATION ===
 
 # Folder containing Swiss *.pickle files
-DATAPATH = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
+DATAPATH = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
 
 # Input CityGML file
 INPUT_GML = r"C:\Sharon\rom_auto_multizoning\data\LoD2_Berlin_Moabit_neu.gml"

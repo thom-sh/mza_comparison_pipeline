@@ -7,14 +7,18 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 import networkx as nx
 
+import sys
+sys.path.append(r"C:\Sharon\msd_copy\floorplan_apartment")
+
 from utils import load_pickle
 from constants1 import ROOM_NAMES
+
 
 # ----------------------
 # CONFIG
 # ----------------------
 ID = 68
-datapath_gt = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
+datapath_gt = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
 GT_GRAPH = os.path.join(datapath_gt, "graph_out", f"{ID}.pickle")
 
 # ----------------------
@@ -23,10 +27,10 @@ GT_GRAPH = os.path.join(datapath_gt, "graph_out", f"{ID}.pickle")
 G = load_pickle(GT_GRAPH)
 
 NAME_TO_IDX = {name: i for i, name in enumerate(ROOM_NAMES)}
-AUXILIARY = {NAME_TO_IDX[name] for name in ["Balcony", "Storeroom"]}
+BALCONY = NAME_TO_IDX["Balcony"]
 
 # Remove balconies
-bal_nodes = [n for n, d in G.nodes(data=True) if d["room_type"] == AUXILIARY]
+bal_nodes = [n for n, d in G.nodes(data=True) if d["room_type"] == BALCONY]
 G.remove_nodes_from(bal_nodes)
 
 # Remove entrance edges (important!)

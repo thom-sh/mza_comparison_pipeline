@@ -167,12 +167,12 @@ def load_gt_rooms_and_footprint(gt_path):
     G = load_pickle(gt_path)
 
     NAME_TO_IDX = {n: i for i, n in enumerate(ROOM_NAMES)}
-    BALCONY_IDX = NAME_TO_IDX.get("Balcony", None)
+    AUXILARY_IDX = NAME_TO_IDX.get("Balcony", "Storeroom", None)
 
     # Remove balconies
-    if BALCONY_IDX is not None:
+    if AUXILARY_IDX is not None:
         G.remove_nodes_from(
-            [n for n, d in G.nodes(data=True) if d.get("room_type") == BALCONY_IDX]
+            [n for n, d in G.nodes(data=True) if d.get("room_type") == AUXILARY_IDX]
         )
 
     # Extract room polygons
@@ -217,18 +217,18 @@ def extract_gt_apartments(gt_path):
 
     # ---- Room type sets ----
     NAME_TO_IDX = {n: i for i, n in enumerate(ROOM_NAMES)}
-    PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom", "Storeroom"]
+    PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom"]
     STAIRS_NAMES  = ["Stairs"]
-    BALCONY_NAMES = ["Balcony"]
+    AUXILIARY_NAMES = ["Balcony", "Storeroom"]
 
     PRIVATE_TYPES = {NAME_TO_IDX[n] for n in PRIVATE_NAMES if n in NAME_TO_IDX}
     STAIRS_TYPES  = {NAME_TO_IDX[n] for n in STAIRS_NAMES if n in NAME_TO_IDX}
-    BALCONY_TYPES = {NAME_TO_IDX[n] for n in BALCONY_NAMES if n in NAME_TO_IDX}
+    AUXILIARY_TYPES = {NAME_TO_IDX[n] for n in AUXILIARY_NAMES if n in NAME_TO_IDX}
 
     # ---- Remove balconies ----
-    balcony_nodes = [n for n, d in G.nodes(data=True)
-                     if d.get("room_type") in BALCONY_TYPES]
-    G.remove_nodes_from(balcony_nodes)
+    auxiliary_nodes = [n for n, d in G.nodes(data=True)
+                     if d.get("room_type") in AUXILIARY_TYPES]
+    G.remove_nodes_from(auxiliary_nodes)
 
     # ---- Build helper graph without entrance edges ----
     H = G.copy()

@@ -11,9 +11,6 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 import pickle
 
-# Your utilities
-import sys
-sys.path.append(r"C:\Sharon\msd_copy\floorplan_apartment\utils_apt.py")
 from utils import load_pickle
 from constants1 import ROOM_NAMES
 
@@ -25,14 +22,14 @@ IDS = [75]   # change as needed
 
 for ID in IDS:
 # --- SWISS GT PATHS ---
-    datapath = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
+    datapath = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
     p = {
         "struct_in": os.path.join(datapath, "struct_in"),
         "graph_out": os.path.join(datapath, "graph_out"),
     }
 
     # --- PREDICTED PATH ---
-    PRED_PATH = fr"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\gml_msd\building_data\building_data_{ID}.pkl"
+    PRED_PATH = fr"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\building_data\building_data_{ID}.pkl"
 
 
     # ===========================================================
@@ -40,17 +37,22 @@ for ID in IDS:
     # ===========================================================
     stack = np.load(os.path.join(p["struct_in"], f"{ID}.npy"))
     G = load_pickle(os.path.join(p["graph_out"], f"{ID}.pickle"))
-    print(f"✅ Loaded Swiss GT for ID {ID}: {len(G.nodes)} rooms, {len(G.edges)} edges")
+    print(f"Loaded Swiss GT for ID {ID}: {len(G.nodes)} rooms, {len(G.edges)} edges")
 
-    # Room type maps
+    # === ROOM TYPE FILTERS ===
     NAME_TO_IDX = {name: i for i, name in enumerate(ROOM_NAMES)}
-    PRIVATE_TYPES = {NAME_TO_IDX[n] for n in ["Bedroom","Livingroom","Kitchen","Dining","Bathroom","Storeroom"] if n in NAME_TO_IDX}
-    STAIRS_TYPES  = {NAME_TO_IDX["Stairs"]} if "Stairs" in NAME_TO_IDX else set()
-    BALCONY_TYPES = {NAME_TO_IDX["Balcony"]} if "Balcony" in NAME_TO_IDX else set()
+    PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom"]
+    STAIRS_NAMES = ["Stairs"]
+    AUXILIARY_NAMES = ["Balcony", "Storeroom"]
 
-    # Remove balconies
-    balcony_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") in BALCONY_TYPES]
-    G.remove_nodes_from(balcony_nodes)
+    PRIVATE_TYPES = {NAME_TO_IDX[n] for n in PRIVATE_NAMES if n in NAME_TO_IDX}
+    STAIRS_TYPES = {NAME_TO_IDX[n] for n in STAIRS_NAMES if n in NAME_TO_IDX}
+    AUXILIARY_TYPES = {NAME_TO_IDX[n] for n in AUXILIARY_NAMES if n in NAME_TO_IDX}
+
+    # === REMOVE AUXILIARY ROOMS ===
+    auxiliary_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") in AUXILIARY_TYPES]
+    G.remove_nodes_from(auxiliary_nodes)
+    print(f"🧹 Removed {len(auxiliary_nodes)} balconies and storerooms.")
 
     # Remove entrance edges
     H = G.copy()
