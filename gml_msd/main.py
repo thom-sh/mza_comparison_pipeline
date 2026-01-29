@@ -29,7 +29,7 @@ BUILDING_IDS = [5641, 6151, 7291, 7293, 7310, 7899, 8413, 8443, 8460, 8514, 8520
 TARGET_GML_ID = "DEBE01YYK0002Uqm"
 
 # Output folder
-OUTPUT_DIR = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\gml_msd"
+OUTPUT_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd"
 
 
 # === MAIN PIPELINE ===

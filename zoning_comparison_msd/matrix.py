@@ -198,7 +198,7 @@ def plot_iou_heatmap(ID, iou_mat, labels_gt, labels_pred):
     ax.set_yticklabels(labels_gt)
 
     ax.set_xlabel("Predicted Zones")
-    ax.set_ylabel("GT Regions (Apts + Stair Pieces)")
+    ax.set_ylabel("GT Regions")
     ax.set_title(f"Building {ID} — IoU Matrix")
 
     for i in range(iou_mat.shape[0]):
@@ -219,7 +219,7 @@ def debug_visualize_alignment(ID, gt_regions, region_labels, pred_zones_raw, pre
     fig, axs = plt.subplots(1, 4, figsize=(30, 7))
 
     # Panel 1: GT regions
-    axs[0].set_title("GT Apartments + Stairs")
+    axs[0].set_title("Ground Truth")
     cmap = plt.get_cmap("tab20")
     for i, poly in enumerate(gt_regions):
         xs, ys = poly.exterior.xy
@@ -238,7 +238,7 @@ def debug_visualize_alignment(ID, gt_regions, region_labels, pred_zones_raw, pre
     axs[1].set_axis_off()
 
     # Panel 3: Predicted Zones (Aligned)
-    axs[2].set_title("Predicted Zones (ALIGNED)")
+    axs[2].set_title("Predicted Zones")
     for i, poly in enumerate(pred_zones_aligned):
         xs, ys = poly.exterior.xy
         axs[2].fill(xs, ys, color=cmap(i), alpha=0.6)
@@ -417,7 +417,7 @@ if __name__ == "__main__":
     SWISS_DATASET_ROOT = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
     PREDICTED_FOLDER   = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\building_data"
 
-    building_ids = [341]
+    building_ids = [154]
 
     for bid in building_ids:
         GT_BASE = os.path.join(SWISS_DATASET_ROOT, "graph_out", f"{bid}.pickle")

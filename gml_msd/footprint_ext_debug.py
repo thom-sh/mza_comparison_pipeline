@@ -380,11 +380,11 @@ def extract_footprint(building_id, datapath):
 
     G = load_pickle(graph_path)
 
-    # Collect polygons (skip balconies by room_type index)
-    BALCONY_TYPE = ROOM_NAMES.index("Balcony")
+    # Collect polygons (skip balconies and storerooms by room_type index)
+    AUXILIARY_TYPE = ROOM_NAMES.index("Balcony", "Storeroom")
     room_polys = []
     for _, d in G.nodes(data=True):
-        if d.get("room_type") == BALCONY_TYPE:
+        if d.get("room_type") == AUXILIARY_TYPE:
             continue
         geom = d.get("geometry")
         if geom:

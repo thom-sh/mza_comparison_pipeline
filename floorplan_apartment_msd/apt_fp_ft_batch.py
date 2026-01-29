@@ -9,7 +9,7 @@ from utils_apt import load_pickle
 from constants1 import ROOM_NAMES, CMAP_ROOMTYPE
 
 # === PATH SETUP ===
-datapath = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
+datapath = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
 p = {"graph_out": os.path.join(datapath, "graph_out")}
 
 # === GET AVAILABLE FILE IDS ===
@@ -18,19 +18,17 @@ ids = sorted([
     for fname in os.listdir(p["graph_out"])
     if fname.endswith(".pickle")
 ])
-print(f"✅ Found {len(ids)} floorplans in folder (processing up to 20).\n")
+print(f"Found {len(ids)} floorplans in folder\n")
 
 # === ROOM TYPE FILTERS ===
 NAME_TO_IDX = {name: i for i, name in enumerate(ROOM_NAMES)}
-
-PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom", "Storeroom"]
+PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom"]
 STAIRS_NAMES = ["Stairs"]
-BALCONY_NAMES = ["Balcony"]
+AUXILIARY_NAMES = ["Balcony", "Storeroom"]
 
 PRIVATE_TYPES = {NAME_TO_IDX[n] for n in PRIVATE_NAMES if n in NAME_TO_IDX}
 STAIRS_TYPES = {NAME_TO_IDX[n] for n in STAIRS_NAMES if n in NAME_TO_IDX}
-BALCONY_TYPES = {NAME_TO_IDX[n] for n in BALCONY_NAMES if n in NAME_TO_IDX}
-
+AUXILIARY_TYPES = {NAME_TO_IDX[n] for n in AUXILIARY_NAMES if n in NAME_TO_IDX}
 
 # === MAIN FUNCTION ===
 def plot_full_analysis(id):
@@ -44,10 +42,10 @@ def plot_full_analysis(id):
         G = load_pickle(graph_path)
         print(f"\n✅ Loaded ID {id} — {len(G.nodes)} rooms, {len(G.edges)} edges")
 
-        # --- Remove balconies ---
-        balcony_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") in BALCONY_TYPES]
-        G.remove_nodes_from(balcony_nodes)
-        print(f"🧹 Removed {len(balcony_nodes)} balconies")
+        # === REMOVE AUXILIARY ROOMS ===
+        auxiliary_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") in AUXILIARY_TYPES]
+        G.remove_nodes_from(auxiliary_nodes)
+        print(f"🧹 Removed {len(auxiliary_nodes)} balconies and storerooms.")
 
         # --- Remove entrance edges (for apartment separation) ---
         H = G.copy()

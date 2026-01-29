@@ -417,7 +417,7 @@ if __name__ == "__main__":
     SWISS_DATASET_ROOT = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
     PREDICTED_FOLDER   = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\building_data"
 
-    building_ids = [2]
+    building_ids = [1]
 
     for bid in building_ids:
         GT_BASE = os.path.join(SWISS_DATASET_ROOT, f"{bid}.pickle")

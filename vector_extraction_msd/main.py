@@ -13,13 +13,13 @@ print("\n=== FLOORPLAN SCALING TOOL ===")
 # --------------------------------------
 
 # Folder containing PDFs (each named buildingID.pdf)
-PDF_FOLDER = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\Real_estate_data\Footprints_final"
+PDF_FOLDER = r"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\Footprints_final"
 
 # OUTPUT folder for pickles
-OUTPUT_PICKLE_FOLDER = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\rd_pickle"
+OUTPUT_PICKLE_FOLDER = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
 
 # Ask user for building ID
-building_id = 44
+building_id = 1
 
 # Compose PDF path automatically
 pdf_path = os.path.join(PDF_FOLDER, f"{building_id}.pdf")

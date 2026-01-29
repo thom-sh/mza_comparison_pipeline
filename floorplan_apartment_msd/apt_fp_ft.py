@@ -27,22 +27,22 @@ for ID in i:
     # === LOAD FILES ===
     stack = np.load(os.path.join(p["struct_in"], f"{ID}.npy"))
     G = load_pickle(os.path.join(p["graph_out"], f"{ID}.pickle"))
-    print(f"✅ Loaded graph_out for ID {ID}: {len(G.nodes)} rooms, {len(G.edges)} edges")
+    print(f"Loaded graph_out for ID {ID}: {len(G.nodes)} rooms, {len(G.edges)} edges")
 
     # === ROOM TYPE FILTERS ===
     NAME_TO_IDX = {name: i for i, name in enumerate(ROOM_NAMES)}
-    PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom", "Storeroom"]
+    PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom"]
     STAIRS_NAMES = ["Stairs"]
-    BALCONY_NAMES = ["Balcony"]
+    AUXILIARY_NAMES = ["Balcony", "Storeroom"]
 
     PRIVATE_TYPES = {NAME_TO_IDX[n] for n in PRIVATE_NAMES if n in NAME_TO_IDX}
     STAIRS_TYPES = {NAME_TO_IDX[n] for n in STAIRS_NAMES if n in NAME_TO_IDX}
-    BALCONY_TYPES = {NAME_TO_IDX[n] for n in BALCONY_NAMES if n in NAME_TO_IDX}
+    AUXILIARY_TYPES = {NAME_TO_IDX[n] for n in AUXILIARY_NAMES if n in NAME_TO_IDX}
 
-    # === REMOVE BALCONIES ===
-    balcony_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") in BALCONY_TYPES]
-    G.remove_nodes_from(balcony_nodes)
-    print(f"🧹 Removed {len(balcony_nodes)} balconies.")
+    # === REMOVE AUXILIARY ROOMS ===
+    auxiliary_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") in AUXILIARY_TYPES]
+    G.remove_nodes_from(auxiliary_nodes)
+    print(f"🧹 Removed {len(auxiliary_nodes)} balconies and storerooms.")
 
     # === REMOVE ENTRANCE EDGES (TO SPLIT APARTMENTS) ===
     H = G.copy()
@@ -62,7 +62,7 @@ for ID in i:
     # === COLLECT VALID POLYGONS (for footprint) ===
     room_polys = []
     for _, d in G.nodes(data=True):
-        if d.get("room_type") in BALCONY_TYPES:
+        if d.get("room_type") in AUXILIARY_TYPES:
             continue
         geom = d.get("geometry")
         if geom:

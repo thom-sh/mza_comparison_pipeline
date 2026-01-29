@@ -8,10 +8,6 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from shapely.affinity import rotate as shp_rotate, translate as shp_translate
 
-from utils import load_pickle
-from constants1 import ROOM_NAMES
-
-
 # ======================================================================
 # SECTION 1 — Generic Geometry Utilities
 # ======================================================================
