@@ -19,7 +19,7 @@ PDF_FOLDER = r"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\Footprints
 OUTPUT_PICKLE_FOLDER = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
 
 # Ask user for building ID
-building_id = 1
+building_id = 16
 
 # Compose PDF path automatically
 pdf_path = os.path.join(PDF_FOLDER, f"{building_id}.pdf")

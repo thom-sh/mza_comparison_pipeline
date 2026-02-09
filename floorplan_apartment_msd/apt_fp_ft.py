@@ -5,28 +5,19 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
-
-import sys
-sys.path.append(r"C:\Sharon\msd_copy\floorplan_apartment\utils_apt.py")
-
 from utils_apt import load_pickle
-from constants1 import ROOM_NAMES, CMAP_ROOMTYPE
+from constants_apt import ROOM_NAMES
 
 # === PATH SETUP ===
 datapath = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
-p = {
-    "struct_in": os.path.join(datapath, "struct_in"),
-    "graph_out": os.path.join(datapath, "graph_out"),
-}
 
 # === CHOOSE SAMPLE ID ===
 # i = [1588, 1602, 1663, 1686, 1939, 1943, 1956, 1972, 1996, 2075, 2097, 2244, 2258, 2389, 2538, 2542, 2751, 2894, 3451, 3594, 5443] # change as needed
-i = [8562]
+i = [75]
 
 for ID in i:
     # === LOAD FILES ===
-    stack = np.load(os.path.join(p["struct_in"], f"{ID}.npy"))
-    G = load_pickle(os.path.join(p["graph_out"], f"{ID}.pickle"))
+    G = load_pickle(os.path.join(datapath, "graph_out", f"{ID}.pickle"))
     print(f"Loaded graph_out for ID {ID}: {len(G.nodes)} rooms, {len(G.edges)} edges")
 
     # === ROOM TYPE FILTERS ===

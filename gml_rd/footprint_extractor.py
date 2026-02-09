@@ -6,9 +6,6 @@ import numpy as np
 from shapely.geometry import Polygon, mapping, LineString, Point
 from shapely.ops import unary_union
 from shapely.affinity import rotate
-from utils import load_pickle
-from constants_rd import ROOM_TYPE_NAMES   # ROOM_NAMES defines the room_type indices
-
 
 # ============================================================
 #                     GEOMETRY UTILITIES

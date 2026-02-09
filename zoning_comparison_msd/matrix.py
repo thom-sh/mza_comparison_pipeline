@@ -5,9 +5,6 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from shapely.geometry import Polygon
-from shapely.ops import unary_union
-
 from footprint_visualization import (
     extract_gt_apartments,
     load_predicted_zone_polygons,
@@ -314,24 +311,6 @@ def plot_similarity_scores(ID, metrics):
 import csv
 import pandas as pd
 
-
-def export_region_metrics_to_csv(metrics, out_path):
-    """
-    Export per-region metrics (A0, A1, S0, ...) to CSV.
-    """
-    df = pd.DataFrame(metrics)
-    df.to_csv(out_path, index=False)
-    print(f"[CSV] Region metrics saved to: {out_path}")
-
-
-def export_global_stats_to_csv(stats, out_path):
-    """
-    Export global building-level statistics to CSV.
-    """
-    df = pd.DataFrame([stats])  # one-row dataframe
-    df.to_csv(out_path, index=False)
-    print(f"[CSV] Global stats saved to: {out_path}")
-
 # ---------------------------------------------------------------
 #  MAIN EVALUATION (Option B)
 # ---------------------------------------------------------------
@@ -398,34 +377,169 @@ def evaluate_building(ID, GT_BASE, PRED_PATH, heatmap=True):
         # ===== SIMILARITY PLOT =====
     plot_similarity_scores(ID, metrics)
 
-    # ===== CSV EXPORT =====
-    output_path = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\comparison_output"
-    csv_region_path = os.path.join(output_path, f"building_{ID}_region_metrics.csv")
-    csv_global_path = os.path.join(output_path, f"building_{ID}_global_stats.csv")
-    export_region_metrics_to_csv(metrics, csv_region_path)
-    export_global_stats_to_csv(stats, csv_global_path)
-
     return metrics, stats, iou_mat
 
+def append_or_create_csv(df_new, csv_path):
+    """
+    Append to CSV if it exists, otherwise create it.
+    """
+    if os.path.exists(csv_path):
+        df_new.to_csv(csv_path, mode="a", header=False, index=False)
+    else:
+        df_new.to_csv(csv_path, mode="w", header=True, index=False)
 
+def deduplicate_and_sort(region_csv, global_csv):
+    """
+    Ensure one entry per building (global)
+    and one entry per (building, region) (region-level).
+    """
 
-# ---------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------
+    # ---- Global stats: one row per building ----
+    df_g = pd.read_csv(global_csv)
+    df_g = df_g.drop_duplicates(
+        subset=["building_id"],
+        keep="last"
+    )
+    df_g = df_g.sort_values(by="building_id")
+    df_g.to_csv(global_csv, index=False)
+
+    # ---- Region metrics: one row per building + region ----
+    df_r = pd.read_csv(region_csv)
+    df_r = df_r.drop_duplicates(
+        subset=["building_id", "region"],
+        keep="last"
+    )
+    df_r = df_r.sort_values(by=["building_id", "region"])
+    df_r.to_csv(region_csv, index=False)
+
+def region_metrics_to_rows(metrics, building_id):
+    rows = []
+    for m in metrics:
+        row = dict(m)
+        row["building_id"] = building_id
+        rows.append(row)
+    return rows
+
+def global_stats_to_row(stats, building_id):
+    row = dict(stats)
+    row["building_id"] = building_id
+    return row
+
 if __name__ == "__main__":
 
     SWISS_DATASET_ROOT = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
-    PREDICTED_FOLDER   = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\building_data"
+    PREDICTED_FOLDER  = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\building_data"
 
-    building_ids = [154]
+    OUTPUT_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\comparison_output"
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    REGION_CSV = os.path.join(OUTPUT_DIR, "all_region_metrics.csv")
+    GLOBAL_CSV = os.path.join(OUTPUT_DIR, "all_global_stats.csv")
+
+    all_region_rows = []
+    all_global_rows = []
+
+    building_ids = [68,
+  
+  341,
+  405,
+  553,
+  973,
+  990,
+  1261,
+  1802,
+  1856,
+  1953,
+  1980,
+  2041,
+  2097,
+  2401,
+  2410,
+  2896,
+  3039,
+  3043,
+  3053,
+  3057,
+  3512,
+  3616,
+  3656,
+  3663,
+  3727,
+  4067,
+  
+  4828,
+  5325,
+  6332,
+  6335,
+  7787,
+  7792,
+  7914,
+  7916,
+  7972,
+  8243,
+  8346,
+  8400,
+  8866,
+  8881,
+  9481,
+  9682,
+  10376,
+  10394,
+  11574,
+  11818,
+  11906,
+  12005,
+  13488,
+  14063,
+  14123,
+  14134,
+  14747,
+  23229,
+  24140,
+  24240,
+  24511,
+  25194,
+  25307,
+  25320,
+  26175,
+  26465,
+  30373,
+  44871,
+  47133,
+  48596,
+  49035,
+  49322,
+  49602,
+  49895,
+  49898,
+  50948,
+  50953,
+  51662,
+  51722]
 
     for bid in building_ids:
         GT_BASE = os.path.join(SWISS_DATASET_ROOT, "graph_out", f"{bid}.pickle")
         PRED_PATH = os.path.join(PREDICTED_FOLDER, f"building_data_{bid}.pkl")
 
-        evaluate_building(bid, GT_BASE, PRED_PATH, heatmap=True)
+        metrics, stats, iou_mat = evaluate_building(
+            bid, GT_BASE, PRED_PATH, heatmap=True
+        )
 
+        all_region_rows.extend(region_metrics_to_rows(metrics, bid))
+        all_global_rows.append(global_stats_to_row(stats, bid))
 
+    # ---- Convert to DataFrames ----
+    df_regions = pd.DataFrame(all_region_rows)
+    df_globals = pd.DataFrame(all_global_rows)
 
+    # ---- Append or create ----
+    append_or_create_csv(df_regions, REGION_CSV)
+    append_or_create_csv(df_globals, GLOBAL_CSV)
 
+    # ---- Deduplicate + sort (CRITICAL STEP) ----
+    deduplicate_and_sort(REGION_CSV, GLOBAL_CSV)
+
+    print("[DONE] Aggregated CSVs updated safely:")
+    print("  - all_region_metrics.csv")
+    print("  - all_global_stats.csv")
 

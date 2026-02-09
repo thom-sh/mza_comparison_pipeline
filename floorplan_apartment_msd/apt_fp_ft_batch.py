@@ -1,4 +1,3 @@
-# %%
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,7 +5,7 @@ import networkx as nx
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from utils_apt import load_pickle
-from constants1 import ROOM_NAMES, CMAP_ROOMTYPE
+from constants_apt import ROOM_NAMES, CMAP_ROOMTYPE
 
 # === PATH SETUP ===
 datapath = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"

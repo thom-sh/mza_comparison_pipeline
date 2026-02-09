@@ -4,30 +4,30 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.patches import Patch
 from utils_apt import load_pickle
-from constants1 import CMAP_ROOMTYPE, COLORS_ROOMTYPE, ROOM_NAMES
+from constants_apt import CMAP_ROOMTYPE, COLORS_ROOMTYPE, ROOM_NAMES
 
 # --- paths ---
-datapath = r"N:\9_SF-Public\Austausch\Thomas Sharon\Master_Thesis_Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
+datapath = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
 graph_path = os.path.join(datapath, "graph_out")
 
 # --- choose sample ID ---
-id = 8562  # change this as needed
+id = 22844 # change this as needed
 
 # --- load graph_out (world-coordinate data) ---
 G = load_pickle(os.path.join(graph_path, f"{id}.pickle"))
 
-# --- remove balconies ---
-balcony_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") == 8]
-for b in balcony_nodes:
-    G.remove_node(b)
+# # --- remove balconies ---
+# balcony_nodes = [n for n, d in G.nodes(data=True) if d.get("room_type") == 8]
+# for b in balcony_nodes:
+#     G.remove_node(b)
 
-# --- remove balconies ---
-storeroom_nodes = [p for p, e in G.nodes(data=True) if e.get("room_type") == 6]
-for c in storeroom_nodes:
-    G.remove_node(c)
+# # --- remove balconies ---
+# storeroom_nodes = [p for p, e in G.nodes(data=True) if e.get("room_type") == 6]
+# for c in storeroom_nodes:
+#     G.remove_node(c)
 
-print(f"Removed {len(balcony_nodes)} balconies from graph.")
-print(f"Removed {len(storeroom_nodes)} storerooms from graph.")
+# print(f"Removed {len(balcony_nodes)} balconies from graph.")
+# print(f"Removed {len(storeroom_nodes)} storerooms from graph.")
 
 # --- extract original world-space polygons and centroids ---
 pos_world = {}

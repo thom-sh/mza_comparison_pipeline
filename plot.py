@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
 import networkx as nx
 
-from constants import ZONING_NAMES, CMAP_ZONING, CMAP_ROOMTYPE
+from constants_apt import CMAP_ZONING, CMAP_ROOMTYPE
 
 FS = 10
 AWESOME_COLORS = ["#1932E1"] # dark blue, dark green, light green, dark yellow

@@ -2,36 +2,38 @@ import os
 import json
 import math
 import numpy as np
-from shapely.geometry import Polygon, mapping, LineString, Point
-from shapely.ops import unary_union
+from shapely.geometry import mapping, LineString, Point
 from shapely.affinity import rotate
-
-# Add project root to Python path for utils import
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from utils import load_pickle
-from constants import ROOM_NAMES   # ROOM_NAMES defines the room_type indices
+from msd_processing import (
+    get_type_sets,
+    load_graph,
+    remove_auxiliary_rooms,
+    detect_apartments_and_core_nodes,
+    extract_apartment_polygons,
+    extract_core_union_from_nodes,
+    extract_building_footprint_from_apts_and_core
+)
 
 
 # ============================================================
 #              GEOMETRY UTILITIES
 # ============================================================
 
-def get_all_stair_polygons(G):
-    """Return list of stair polygons based on room_type == 'Stairs'."""
-    STAIR_TYPE = ROOM_NAMES.index("Stairs")
-    stair_polys = []
-    for _, d in G.nodes(data=True):
-        if d.get("room_type") == STAIR_TYPE:
-            geom = d.get("geometry")
-            if geom:
-                try:
-                    poly = Polygon(geom)
-                    if poly.is_valid and not poly.is_empty:
-                        stair_polys.append(poly)
-                except Exception:
-                    pass
-    return stair_polys
+# def get_all_stair_polygons(G):
+#     """Return list of stair polygons based on room_type == 'Stairs'."""
+#     STAIR_TYPE = ROOM_NAMES.index("Stairs")
+#     stair_polys = []
+#     for _, d in G.nodes(data=True):
+#         if d.get("room_type") == STAIR_TYPE:
+#             geom = d.get("geometry")
+#             if geom:
+#                 try:
+#                     poly = Polygon(geom)
+#                     if poly.is_valid and not poly.is_empty:
+#                         stair_polys.append(poly)
+#                 except Exception:
+#                     pass
+#     return stair_polys
 
 
 def footprint_edges(footprint):
@@ -149,10 +151,10 @@ def find_best_outward_edge(stair_poly, footprint):
 #   ORIENTATION LOGIC (ALL YOUR BUILDING RULES)
 # ============================================================
 
-def orient_footprint_by_stairs(footprint, stair_polys,
+def orient_footprint_by_stairs(footprint, core_polys,
                                dir_tolerance_deg=10.0):
 
-    if not stair_polys:
+    if not core_polys:
         print("⚠️ No stairs found — skipping orientation.")
         return footprint
 
@@ -163,8 +165,8 @@ def orient_footprint_by_stairs(footprint, stair_polys,
 
     # Step 1: For each stair polygon -> outward-facing edge & its façade
     stair_infos = []
-    for stair_poly in stair_polys:
-        best_edge = find_best_outward_edge(stair_poly, footprint)
+    for core_poly in core_polys:
+        best_edge = find_best_outward_edge(core_poly, footprint)
         if best_edge is None:
             continue
 
@@ -362,55 +364,65 @@ def plot_orientation_debug(
 
 
 # ============================================================
+#             CONVERT CORE_UNION TO LIST
+# ============================================================
+
+def core_union_to_polygons(core_union):
+    """
+    Normalize core_union (Polygon or MultiPolygon) to List[Polygon].
+    """
+    if core_union is None or core_union.is_empty:
+        return []
+
+    if core_union.geom_type == "Polygon":
+        return [core_union]
+
+    if core_union.geom_type == "MultiPolygon":
+        return list(core_union.geoms)
+
+    return []
+
+# ============================================================
 #             FOOTPRINT EXTRACTION + ORIENTATION
 # ============================================================
 
 def extract_footprint(building_id, datapath):
     """
-    Extract a unified building footprint polygon from the Swiss dataset graph_out,
-    and orient it so that the outer-facing stair side lies along the x-axis and
-    appears on the bottom part of the building in the plot.
+    Extract a unified building footprint polygon using msd_processing (apts ∪ stairs),
+    then orient it so the outward-facing stair side lies along the x-axis and appears
+    at the bottom of the plot.
 
     Returns:
         shapely Polygon (oriented footprint)
     """
-    graph_path = os.path.join(datapath, "graph_out", f"{building_id}.pickle")
-    if not os.path.exists(graph_path):
-        raise FileNotFoundError(f"❌ File not found: {graph_path}")
+    G = load_graph(datapath, building_id)
 
-    G = load_pickle(graph_path)
+    # --- get type sets from msd_processing ---
+    name_to_idx, private_types, auxiliary_types = get_type_sets()
 
-    # Collect polygons (skip balconies and storerooms by room_type index)
-    AUXILIARY_TYPE = ROOM_NAMES.index("Balcony", "Storeroom")
-    room_polys = []
-    for _, d in G.nodes(data=True):
-        if d.get("room_type") == AUXILIARY_TYPE:
-            continue
-        geom = d.get("geometry")
-        if geom:
-            try:
-                poly = Polygon(geom)
-                if poly.is_valid and not poly.is_empty:
-                    room_polys.append(poly)
-            except Exception:
-                pass
+    # --- ensure auxiliary rooms are removed (optional but consistent) ---
+    remove_auxiliary_rooms(G, auxiliary_types)
 
-    if not room_polys:
-        raise ValueError(f"❌ No valid polygons found for building ID {building_id}")
+    # --- detect apartments (same logic as your plotting pipeline) ---
+    apartments, core_nodes = detect_apartments_and_core_nodes(G, private_types)
 
-    # Merge → smooth
-    merged = unary_union(room_polys)
-    footprint = merged.buffer(0.5).buffer(-0.4)
-    if footprint.geom_type == "MultiPolygon":
-        footprint = max(footprint.geoms, key=lambda g: g.area)
-    footprint = footprint.simplify(0.05, preserve_topology=True)
+    # --- build footprint as (apartment polygons ∪ stairs) ---
+    apartment_polygons = extract_apartment_polygons(G, apartments, auxiliary_types)
+    core_union = extract_core_union_from_nodes(G, core_nodes)
 
-    # Orientation by stairs
-    stair_polys = get_all_stair_polygons(G)
-    footprint = orient_footprint_by_stairs(footprint, stair_polys)
+    footprint = extract_building_footprint_from_apts_and_core(
+        apartment_polygons=apartment_polygons,
+        core_union=core_union
+    )
+
+    core_polys = core_union_to_polygons(core_union)
+
+    # --- orientation by stairs (your existing alignment logic) ---
+    footprint = orient_footprint_by_stairs(footprint, core_polys)
 
     print(f"✅ Final oriented footprint for ID {building_id}.")
     return footprint
+
 
 
 # ============================================================

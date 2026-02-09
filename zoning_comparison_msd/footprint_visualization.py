@@ -8,8 +8,17 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from shapely.affinity import rotate as shp_rotate, translate as shp_translate
 
-from utils import load_pickle
-from constants1 import ROOM_NAMES
+from utils_apt import load_pickle
+from constants_apt import ROOM_NAMES
+
+from msd_processing import (
+    get_type_sets,
+    remove_auxiliary_rooms,
+    detect_apartments_and_core_nodes,
+    extract_apartment_polygons,
+    extract_core_union_from_nodes,
+    extract_building_footprint_from_apts_and_core,
+)
 
 
 # ======================================================================
@@ -159,55 +168,51 @@ def align_pred(pred_poly, gt_poly,
 # SECTION 2 — Ground Truth Extraction (Swiss)
 # ======================================================================
 
-def load_gt_rooms_and_footprint(gt_path):
-    """
-    Load Swiss GT graph, remove balconies, extract room polygons + footprint.
-    (Used for footprint alignment and room-level plots.)
-    """
-    G = load_pickle(gt_path)
+# def load_gt_rooms_and_footprint(gt_path):
+#     """
+#     Load Swiss GT graph, remove balconies, extract room polygons + footprint.
+#     (Used for footprint alignment and room-level plots.)
+#     """
+#     G = load_pickle(gt_path)
 
-    NAME_TO_IDX = {n: i for i, n in enumerate(ROOM_NAMES)}
-    AUXILARY_IDX = NAME_TO_IDX.get("Balcony", "Storeroom", None)
+#     NAME_TO_IDX = {n: i for i, n in enumerate(ROOM_NAMES)}
+#     AUXILARY_IDX = NAME_TO_IDX.get("Balcony", "Storeroom", None)
 
-    # Remove balconies
-    if AUXILARY_IDX is not None:
-        G.remove_nodes_from(
-            [n for n, d in G.nodes(data=True) if d.get("room_type") == AUXILARY_IDX]
-        )
+#     # Remove balconies
+#     if AUXILARY_IDX is not None:
+#         G.remove_nodes_from(
+#             [n for n, d in G.nodes(data=True) if d.get("room_type") == AUXILARY_IDX]
+#         )
 
-    # Extract room polygons
-    rooms = []
-    room_types = []
+#     # Extract room polygons
+#     rooms = []
+#     room_types = []
 
-    for _, d in G.nodes(data=True):
-        geom = d.get("geometry")
-        if not geom:
-            continue
-        try:
-            poly = Polygon(geom)
-            if poly.is_valid and not poly.is_empty:
-                rooms.append(poly)
-                room_types.append(d.get("room_type"))
-        except Exception:
-            pass
+#     for _, d in G.nodes(data=True):
+#         geom = d.get("geometry")
+#         if not geom:
+#             continue
+#         try:
+#             poly = Polygon(geom)
+#             if poly.is_valid and not poly.is_empty:
+#                 rooms.append(poly)
+#                 room_types.append(d.get("room_type"))
+#         except Exception:
+#             pass
 
-    # Combine & smooth footprint
-    merged = unary_union(rooms)
-    fp = merged.buffer(0.5).buffer(-0.4)
-    fp = largest_poly(fp.simplify(0.05, preserve_topology=True))
+#     # Combine & smooth footprint
+#     merged = unary_union(rooms)
+#     fp = merged.buffer(0.5).buffer(-0.4)
+#     fp = largest_poly(fp.simplify(0.05, preserve_topology=True))
 
-    return fp, rooms, room_types
+#     return fp, rooms, room_types
 
 
 def extract_gt_apartments(gt_path):
     """
-    Extract apartment polygons from Swiss GT using:
-      - remove balconies
-      - remove 'entrance' edges
-      - connected components
-      - keep components containing at least one private room
-      - merge polygons per apartment
-    Staircases are kept as part of the building.
+    Extract apartment polygons and stair polygons from Swiss GT, and compute GT footprint using
+    msd_processing footprint logic: (apartments union) ∪ (stairs union), with smoothing.
+
     Returns:
       apartment_polygons: list[Polygon or MultiPolygon]
       stairs_polys:      list[Polygon]  (for visualization)
@@ -215,158 +220,114 @@ def extract_gt_apartments(gt_path):
     """
     G = load_pickle(gt_path)
 
-    # ---- Room type sets ----
-    NAME_TO_IDX = {n: i for i, n in enumerate(ROOM_NAMES)}
-    PRIVATE_NAMES = ["Bedroom", "Livingroom", "Kitchen", "Dining", "Bathroom"]
-    STAIRS_NAMES  = ["Stairs"]
-    AUXILIARY_NAMES = ["Balcony", "Storeroom"]
+    # --- use consistent room type sets from msd_processing ---
+    name_to_idx, private_types, auxiliary_types = get_type_sets()
 
-    PRIVATE_TYPES = {NAME_TO_IDX[n] for n in PRIVATE_NAMES if n in NAME_TO_IDX}
-    STAIRS_TYPES  = {NAME_TO_IDX[n] for n in STAIRS_NAMES if n in NAME_TO_IDX}
-    AUXILIARY_TYPES = {NAME_TO_IDX[n] for n in AUXILIARY_NAMES if n in NAME_TO_IDX}
+    # Remove auxiliary rooms (balcony/storeroom)
+    remove_auxiliary_rooms(G, auxiliary_types)
 
-    # ---- Remove balconies ----
-    auxiliary_nodes = [n for n, d in G.nodes(data=True)
-                     if d.get("room_type") in AUXILIARY_TYPES]
-    G.remove_nodes_from(auxiliary_nodes)
+    # Detect apartments by removing entrance edges and taking CCs with private rooms
+    apartments, core_nodes = detect_apartments_and_core_nodes(G, private_types)
 
-    # ---- Build helper graph without entrance edges ----
-    H = G.copy()
-    entrance_edges = [
-        (u, v) for u, v, d in H.edges(data=True)
-        if d.get("connectivity") == "entrance"
-    ]
-    H.remove_edges_from(entrance_edges)
+    # Create unified polygons per apartment (buffered outlines)
+    apartment_polygons = extract_apartment_polygons(G, apartments, auxiliary_types, buffer_amt=0.2)
 
-    # ---- Connected components -> apartments ----
-    components = list(nx.connected_components(H))
-    apartments = []
-    for comp in components:
-        types = [G.nodes[n].get("room_type") for n in comp if "room_type" in G.nodes[n]]
-        if any((t in PRIVATE_TYPES) for t in types):
-            apartments.append(comp)
+    # Stairs union for footprint (single geometry)
+    core_union = extract_core_union_from_nodes(G, core_nodes)
 
-    # ---- Collect polygons for whole building footprint ----
-    room_polys = []
-    for _, d in G.nodes(data=True):
-        geom = d.get("geometry")
-        if not geom:
-            continue
-        try:
-            poly = Polygon(geom)
-            if poly.is_valid and not poly.is_empty:
-                room_polys.append(poly)
-        except Exception:
-            pass
+    # GT footprint = (apts ∪ stairs) with smoothing
+    gt_footprint = extract_building_footprint_from_apts_and_core(
+        apartment_polygons=apartment_polygons,
+        core_union=core_union,
+        outer_buffer=0.5,
+        inner_buffer=-0.4,
+        simplify_tol=0.275,
+    )
 
-    merged = unary_union(room_polys)
-    footprint = merged.buffer(0.5).buffer(-0.4)
-    if footprint.geom_type == "MultiPolygon":
-        footprint = max(footprint.geoms, key=lambda g: g.area)
-    footprint = footprint.simplify(0.05, preserve_topology=True)
+    core_polys = core_union_to_polygons(core_union)
 
-    # ---- Create unified polygons per apartment ----
-    apartment_polygons = []
-    for comp in apartments:
-        apt_polys = []
-        for n in comp:
-            geom = G.nodes[n].get("geometry")
-            if not geom:
-                continue
-            try:
-                poly = Polygon(geom)
-                if poly.is_valid and not poly.is_empty:
-                    apt_polys.append(poly)
-            except Exception:
-                pass
+    return apartment_polygons, core_polys, gt_footprint
 
-        if not apt_polys:
-            continue
+# ============================================================
+#             CONVERT CORE_UNION TO LIST
+# ============================================================
 
-        merged_apt = unary_union(apt_polys)
-        merged_apt = merged_apt.buffer(0.2).buffer(-0.2)
-        if merged_apt.geom_type == "MultiPolygon":
-            merged_apt = unary_union(merged_apt)
-        apartment_polygons.append(merged_apt)
-
-    # ---- Collect stair polygons for drawing ----
-    stairs_polys = []
-    for _, d in G.nodes(data=True):
-        if d.get("room_type") in STAIRS_TYPES:
-            geom = d.get("geometry")
-            if geom:
-                try:
-                    poly = Polygon(geom)
-                    if poly.is_valid and not poly.is_empty:
-                        stairs_polys.append(poly)
-                except Exception:
-                    pass
-
-    stairs_polys = clean_stairs(stairs_polys, contain_thr=0.95, iou_thr=0.95)
-
-    return apartment_polygons, stairs_polys, footprint
-
-def clean_stairs(stairs_polys, contain_thr=0.98, iou_thr=0.98, merge_eps=0.15):
+def core_union_to_polygons(core_union):
     """
-    1) Remove duplicate/nested stair polys (containment or very high IoU).
-    2) Merge adjacent / near-adjacent stair pieces (landing pieces etc.) using small buffer merge_eps.
-    Returns a list of stair polygons (can be 1 or multiple components).
+    Normalize core_union (Polygon or MultiPolygon) to List[Polygon].
     """
-
-    if not stairs_polys:
+    if core_union is None or core_union.is_empty:
         return []
 
-    # ---- sanitize
-    stairs = [s.buffer(0) for s in stairs_polys if s and (not s.is_empty)]
-    if not stairs:
-        return []
+    if core_union.geom_type == "Polygon":
+        return [core_union]
 
-    # ---- (A) DEDUPE duplicates/nested
-    keep = [True] * len(stairs)
-
-    for i in range(len(stairs)):
-        if not keep[i]:
-            continue
-        for j in range(i + 1, len(stairs)):
-            if not keep[j]:
-                continue
-
-            inter = stairs[i].intersection(stairs[j]).area
-            if inter <= 0:
-                continue
-
-            # containment of j in i
-            contain_j_in_i = inter / stairs[j].area if stairs[j].area > 0 else 0.0
-            contain_i_in_j = inter / stairs[i].area if stairs[i].area > 0 else 0.0
-
-            union = stairs[i].union(stairs[j]).area
-            iou = inter / union if union > 0 else 0.0
-
-            if (contain_j_in_i >= contain_thr) or (contain_i_in_j >= contain_thr) or (iou >= iou_thr):
-                # drop smaller
-                if stairs[i].area >= stairs[j].area:
-                    keep[j] = False
-                else:
-                    keep[i] = False
-                    break
-
-    stairs = [s for s, k in zip(stairs, keep) if k]
-    if not stairs:
-        return []
-
-    # ---- (B) MERGE adjacent / near-adjacent pieces
-    merged = unary_union([s.buffer(merge_eps) for s in stairs]).buffer(-merge_eps)
-
-    if merged.is_empty:
-        return []
-
-    if merged.geom_type == "Polygon":
-        return [merged]
-
-    if merged.geom_type == "MultiPolygon":
-        return list(merged.geoms)
+    if core_union.geom_type == "MultiPolygon":
+        return list(core_union.geoms)
 
     return []
+
+# def clean_stairs(stairs_polys, contain_thr=0.98, iou_thr=0.98, merge_eps=0.15):
+#     """
+#     1) Remove duplicate/nested stair polys (containment or very high IoU).
+#     2) Merge adjacent / near-adjacent stair pieces (landing pieces etc.) using small buffer merge_eps.
+#     Returns a list of stair polygons (can be 1 or multiple components).
+#     """
+
+#     if not stairs_polys:
+#         return []
+
+#     # ---- sanitize
+#     stairs = [s.buffer(0) for s in stairs_polys if s and (not s.is_empty)]
+#     if not stairs:
+#         return []
+
+#     # ---- (A) DEDUPE duplicates/nested
+#     keep = [True] * len(stairs)
+
+#     for i in range(len(stairs)):
+#         if not keep[i]:
+#             continue
+#         for j in range(i + 1, len(stairs)):
+#             if not keep[j]:
+#                 continue
+
+#             inter = stairs[i].intersection(stairs[j]).area
+#             if inter <= 0:
+#                 continue
+
+#             # containment of j in i
+#             contain_j_in_i = inter / stairs[j].area if stairs[j].area > 0 else 0.0
+#             contain_i_in_j = inter / stairs[i].area if stairs[i].area > 0 else 0.0
+
+#             union = stairs[i].union(stairs[j]).area
+#             iou = inter / union if union > 0 else 0.0
+
+#             if (contain_j_in_i >= contain_thr) or (contain_i_in_j >= contain_thr) or (iou >= iou_thr):
+#                 # drop smaller
+#                 if stairs[i].area >= stairs[j].area:
+#                     keep[j] = False
+#                 else:
+#                     keep[i] = False
+#                     break
+
+#     stairs = [s for s, k in zip(stairs, keep) if k]
+#     if not stairs:
+#         return []
+
+#     # ---- (B) MERGE adjacent / near-adjacent pieces
+#     merged = unary_union([s.buffer(merge_eps) for s in stairs]).buffer(-merge_eps)
+
+#     if merged.is_empty:
+#         return []
+
+#     if merged.geom_type == "Polygon":
+#         return [merged]
+
+#     if merged.geom_type == "MultiPolygon":
+#         return list(merged.geoms)
+
+#     return []
 
 
 # ======================================================================
@@ -408,7 +369,7 @@ def compute_predicted_footprint(pred_path):
 def visualize_alignment(ID, GT_BASE, PRED_PATH):
     """3-panel visualization: GT, predicted raw, predicted aligned."""
 
-    gt_fp, _, _ = load_gt_rooms_and_footprint(GT_BASE)
+    _, _, gt_fp = extract_gt_apartments(GT_BASE)
     pred_fp     = compute_predicted_footprint(PRED_PATH)
     if pred_fp is None:
         print(f"[WARN] No predicted footprint for building {ID}.")
@@ -455,7 +416,7 @@ def visualize_rooms_and_zones(ID, GT_BASE, PRED_PATH):
     """
 
     # --- Swiss GT apartments ---
-    apt_polys, stairs_polys, gt_fp = extract_gt_apartments(GT_BASE)
+    apt_polys, core_polys, gt_fp = extract_gt_apartments(GT_BASE)
 
     # --- Predicted zones + footprint ---
     pred_zones = load_predicted_zone_polygons(PRED_PATH)
@@ -496,7 +457,7 @@ def visualize_rooms_and_zones(ID, GT_BASE, PRED_PATH):
                 ax.fill(xs, ys, color=cmap_apts(i % 10), alpha=0.6, ec="black", lw=0.8)
 
     # stairs
-    for poly in stairs_polys:
+    for poly in core_polys:
         xs, ys = poly.exterior.xy
         ax.fill(xs, ys, color="black", alpha=0.9)
         ax.plot(xs, ys, color="white", lw=1.2)

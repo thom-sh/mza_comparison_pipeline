@@ -40,8 +40,8 @@ def main():
         print("===============================")
 
         # Output paths (unique per building)
-        output_geojson = os.path.join(OUTPUT_DIR, f"footprint_{bid}.geojson")
-        output_gml     = os.path.join(OUTPUT_DIR, f"LoD2_Berlin_Moabit_replaced_{bid}.gml")
+        output_geojson = os.path.join(OUTPUT_DIR, "footprint", f"footprint_{bid}.geojson")
+        output_gml     = os.path.join(OUTPUT_DIR, "LoD2", f"LoD2_Berlin_Moabit_replaced_{bid}.gml")
 
         # --- STEP 1: Extract footprint ---
         print("\n🏗️ STEP 1: Generating Swiss footprint…")
