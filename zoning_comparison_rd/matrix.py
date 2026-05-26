@@ -352,6 +352,9 @@ def evaluate_building(ID, GT_BASE, PRED_PATH, heatmap=True):
 
     metrics, stats = compute_region_metrics(gt_regions, pred_zones_aligned, iou_mat, inter_mat, region_labels)
 
+    stats["n_gt_regions"] = len(gt_regions)
+    stats["n_pred_regions"] = len(pred_zones_aligned)
+
     print("\nRegion | Pred | IoU | Cov | Frag | Purity | AreaErr% | Dist | Sim")
     print("--------------------------------------------------------------------")
     for m in metrics:
@@ -439,7 +442,9 @@ if __name__ == "__main__":
     all_region_rows = []
     all_global_rows = []
 
-    building_ids = [1, 2]
+    # building_ids = [1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,19,20,21,22]
+    # building_ids = [23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44]
+    building_ids = [33]
 
     for bid in building_ids:
         GT_BASE = os.path.join(SWISS_DATASET_ROOT, f"{bid}.pickle")

@@ -22,6 +22,7 @@ def load_graph(datapath: str, building_id: int):
         raise FileNotFoundError(f"File not found: {path}")
     return load_pickle(path)
 
+
 def save_zoning_pickle(
     dwelling_polygons,
     core_polygons,
@@ -34,16 +35,19 @@ def save_zoning_pickle(
     room_type:
         0 = dwelling
         1 = core
+
+    Each apartment/core geometry is saved as one object, even if it is a
+    MultiPolygon. Detached tiny parts remain part of the same saved object.
     """
 
-    def _collect_polygon_parts(geoms):
+    def _normalize_saved_geoms(geoms):
         if geoms is None:
             return []
 
         if not isinstance(geoms, (list, tuple)):
             geoms = [geoms]
 
-        parts = []
+        normalized = []
         for geom in geoms:
             if geom is None:
                 continue
@@ -52,29 +56,35 @@ def save_zoning_pickle(
             if geom is None or geom.is_empty:
                 continue
 
-            parts.extend(polygon_parts(geom))
+            parts = polygon_parts(geom)
+            if not parts:
+                continue
 
-        return parts
+            if len(parts) == 1:
+                normalized.append(parts[0])
+            else:
+                normalized.append(clean_geom(unary_union(parts)))
 
-    dwelling_parts = _collect_polygon_parts(dwelling_polygons)
-    core_parts = _collect_polygon_parts(core_polygons)
+        return normalized
+
+    dwelling_geoms = _normalize_saved_geoms(dwelling_polygons)
+    core_geoms = _normalize_saved_geoms(core_polygons)
 
     floorplan_data = {"floor_plan": []}
 
     if building_id is not None:
         floorplan_data["building_id"] = building_id
 
-    # keep core first, like your stairs-first example
-    for poly in core_parts:
+    for geom in core_geoms:
         floorplan_data["floor_plan"].append({
-            "polygon": poly,
-            "room_type": 1
+            "polygon": geom,
+            "room_type": 1,
         })
 
-    for poly in dwelling_parts:
+    for geom in dwelling_geoms:
         floorplan_data["floor_plan"].append({
-            "polygon": poly,
-            "room_type": 0
+            "polygon": geom,
+            "room_type": 0,
         })
 
     out_dir = os.path.dirname(out_path)
@@ -85,10 +95,11 @@ def save_zoning_pickle(
 
     print(
         f"Saved zoning pickle: {out_path} "
-        f"(cores: {len(core_parts)}, dwellings: {len(dwelling_parts)})"
+        f"(cores: {len(core_geoms)}, dwellings: {len(dwelling_geoms)})"
     )
 
     return floorplan_data
+
 
 def get_type_sets():
     """
@@ -348,6 +359,103 @@ def extract_building_footprint_from_apts_and_core(
 # Gap filling by simultaneous apartment growth
 # ============================================================
 
+def merge_small_parts_to_nearest_apartment(apartments, min_area=0.01):
+    """
+    Reassign tiny detached polygon parts to the most plausible apartment owner.
+
+    Ownership rule:
+    1) prefer the apartment with the longest shared boundary,
+    2) break ties using the smallest distance.
+    """
+    if not apartments:
+        return apartments
+
+    cleaned_apts = []
+    small_parts = []
+
+    for apt in apartments:
+        if apt is None or apt.is_empty:
+            cleaned_apts.append(None)
+            continue
+
+        parts = polygon_parts(clean_geom(apt))
+        large_parts = [p for p in parts if p.area >= min_area]
+        tiny_parts = [p for p in parts if p.area < min_area]
+
+        if not large_parts:
+            cleaned_apts.append(None)
+        elif len(large_parts) == 1:
+            cleaned_apts.append(large_parts[0])
+        else:
+            cleaned_apts.append(clean_geom(unary_union(large_parts)))
+
+        small_parts.extend(tiny_parts)
+
+    for sliver in small_parts:
+        best_idx = None
+        best_shared = -1.0
+        best_distance = float("inf")
+
+        for i, apt in enumerate(cleaned_apts):
+            if apt is None or apt.is_empty:
+                continue
+
+            shared_len = apt.boundary.intersection(sliver.boundary).length
+            distance = apt.distance(sliver)
+
+            if (
+                shared_len > best_shared
+                or (
+                    np.isclose(shared_len, best_shared)
+                    and distance < best_distance
+                )
+            ):
+                best_idx = i
+                best_shared = shared_len
+                best_distance = distance
+
+        if best_idx is not None:
+            cleaned_apts[best_idx] = clean_geom(
+                unary_union([cleaned_apts[best_idx], sliver])
+            )
+
+    return cleaned_apts
+from shapely.ops import unary_union
+
+def filter_tiny_slivers(geom, min_area=0.01, min_width=0.05):
+    """
+    Remove tiny / line-like polygon parts.
+
+    min_area  : minimum polygon area to keep
+    min_width : minimum bbox width/height to keep
+    """
+    if geom is None or geom.is_empty:
+        return None
+
+    kept = []
+
+    for p in polygon_parts(geom):
+        if p.is_empty:
+            continue
+
+        if p.area < min_area:
+            continue
+
+        minx, miny, maxx, maxy = p.bounds
+        width = maxx - minx
+        height = maxy - miny
+
+        if min(width, height) < min_width:
+            continue
+
+        kept.append(p)
+
+    if not kept:
+        return None
+    if len(kept) == 1:
+        return kept[0]
+    return unary_union(kept)
+
 def simultaneous_apartment_growth(
     apartment_polygons,
     core_union,
@@ -355,7 +463,8 @@ def simultaneous_apartment_growth(
     step=0.03,
     max_iter=400,
     min_residual_area=1e-4,
-    simplify_tol=0.0,
+    simplify_tol=0.01,
+    min_part_area=0.01,
 ):
     """
     Fill gaps by simultaneous outward growth of all apartments inside:
@@ -363,6 +472,9 @@ def simultaneous_apartment_growth(
 
     Core is unchanged.
     Apartments expand equally until they meet each other and the footprint.
+
+    Tiny detached polygon parts are reassigned to the most plausible apartment
+    after the final clipping step.
     """
     apartment_polygons = [clean_geom(a) for a in apartment_polygons if a is not None and not a.is_empty]
     core_union = clean_geom(core_union)
@@ -447,6 +559,12 @@ def simultaneous_apartment_growth(
         else:
             final_apts.append(unary_union(parts))
 
+    final_apts = [
+        filter_tiny_slivers(apt, min_area=0.01, min_width=0.05)
+        if apt is not None else None
+        for apt in final_apts
+    ]
+
     final_union = unary_union([g for g in final_apts if g is not None and not g.is_empty])
     residual = clean_geom(free_domain.difference(final_union))
     residual_parts = polygon_parts(residual)
@@ -511,7 +629,7 @@ def plot_all_views(
                         facecolor=apt_color,
                         alpha=0.85,
                         edgecolor=outline_color,
-                        linewidth=0.8
+                        linewidth=0.8,
                     )
             except Exception:
                 pass

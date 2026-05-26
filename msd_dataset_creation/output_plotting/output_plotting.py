@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -11,20 +12,20 @@ GLOBAL_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\comparison_output\a
 # LOAD DATA
 # ===============================================================
 df = pd.read_csv(GLOBAL_CSV)
-df = df.sort_values("building_id")
 
 # ===============================================================
-# 1️⃣ SORTED BAR PLOT — Mean IoU (matched)
+# 1️⃣ PERCENTILE CURVE — Mean IoU (matched)
 # ===============================================================
-df_sorted = df.sort_values("mean_iou_matched")
+iou_sorted = np.sort(df["mean_iou_matched"].values)
+percentiles = np.linspace(0, 100, len(iou_sorted))
 
-plt.figure(figsize=(12, 5))
-plt.bar(df_sorted["building_id"], df_sorted["mean_iou_matched"])
-plt.ylim(0, 1)
-plt.xlabel("Building ID")
+plt.figure(figsize=(6, 4))
+plt.plot(percentiles, iou_sorted, marker="o", markersize=3)
+plt.xlabel("Building Percentile")
 plt.ylabel("Mean IoU (matched)")
-plt.title("Mean Matched IoU per Building (sorted)")
-plt.xticks(rotation=90)
+plt.title("Percentile Curve of Mean Matched IoU")
+plt.ylim(0, 1)
+plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
 
@@ -36,52 +37,43 @@ plt.hist(df["mean_iou_matched"], bins=15, edgecolor="black")
 plt.xlabel("Mean IoU (matched)")
 plt.ylabel("Number of Buildings")
 plt.title("Distribution of Mean Matched IoU")
+plt.xlim(0, 1)
 plt.tight_layout()
 plt.show()
 
 # ===============================================================
 # 3️⃣ SCATTER — Mean IoU (matched) vs Region Recall
 # ===============================================================
-plt.figure(figsize=(6, 5))
-plt.scatter(df["region_recall"], df["mean_iou_matched"])
-plt.xlabel("Region Recall")
+plt.figure(figsize=(6, 6))
+plt.scatter(df["region_recall"], df["mean_iou_matched"], alpha=0.7)
+
+plt.axhline(0.7, linestyle="--", linewidth=1)
+plt.axvline(0.9, linestyle="--", linewidth=1)
+
+plt.xlabel("Region Recall (completeness)")
 plt.ylabel("Mean IoU (matched)")
 plt.title("Geometric Accuracy vs Completeness")
+plt.xlim(0, 1)
+plt.ylim(0, 1)
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
 
 # ===============================================================
-# 4️⃣ DIFFERENCE PLOT — Matched vs Overall IoU
+# 4️⃣ DISTRIBUTION OF IoU GAP (no building_id)
 # ===============================================================
 df["iou_gap"] = df["mean_iou_matched"] - df["mean_iou_overall"]
 
-plt.figure(figsize=(12, 4))
-plt.bar(df["building_id"], df["iou_gap"])
-plt.axhline(0, color="black", linewidth=0.8)
-plt.xlabel("Building ID")
-plt.ylabel("IoU Gap (matched − overall)")
+plt.figure(figsize=(6, 4))
+plt.hist(df["iou_gap"], bins=15, edgecolor="black")
+plt.xlabel("IoU Gap (matched − overall)")
+plt.ylabel("Number of Buildings")
 plt.title("Penalty Due to Missed Regions")
-plt.xticks(rotation=90)
 plt.tight_layout()
 plt.show()
 
 # ===============================================================
-# 5️⃣ BOXPLOT — By Archetype (only if available)
-# ===============================================================
-if "archetype" in df.columns:
-    plt.figure(figsize=(7, 5))
-    sns.boxplot(data=df, x="archetype", y="mean_iou_matched")
-    plt.xlabel("Building Archetype")
-    plt.ylabel("Mean IoU (matched)")
-    plt.title("Zoning Accuracy by Building Archetype")
-    plt.tight_layout()
-    plt.show()
-else:
-    print("[INFO] No 'archetype' column found — skipping boxplot.")
-
-# ===============================================================
-# 6️⃣ HEATMAP — Overview of Key Metrics (Appendix-style)
+# 5️⃣ HEATMAP — Metric correlation (no building axis misuse)
 # ===============================================================
 metrics = [
     "mean_iou_matched",
@@ -91,17 +83,10 @@ metrics = [
     "mean_fragmentation",
 ]
 
-df_hm = df.set_index("building_id")[metrics]
+corr = df[metrics].corr()
 
-plt.figure(figsize=(8, 6))
-sns.heatmap(
-    df_hm,
-    cmap="viridis",
-    cbar_kws={"label": "Metric value"},
-    linewidths=0.2
-)
-plt.title("Overview of Zoning Performance Metrics")
-plt.xlabel("Metric")
-plt.ylabel("Building ID")
+plt.figure(figsize=(6, 5))
+sns.heatmap(corr, annot=True, cmap="viridis", vmin=-1, vmax=1)
+plt.title("Correlation Between Zoning Metrics")
 plt.tight_layout()
 plt.show()

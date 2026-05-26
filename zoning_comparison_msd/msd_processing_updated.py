@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -7,7 +8,11 @@ from shapely.geometry import Polygon, JOIN_STYLE
 from shapely.ops import unary_union
 from shapely.validation import make_valid
 
-from utils_apt import load_pickle, save_pickle
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
+from utils_apt import load_pickle
 from constants_apt import ROOM_NAMES
 
 
@@ -22,73 +27,6 @@ def load_graph(datapath: str, building_id: int):
         raise FileNotFoundError(f"File not found: {path}")
     return load_pickle(path)
 
-def save_zoning_pickle(
-    dwelling_polygons,
-    core_polygons,
-    out_path: str,
-    building_id: int | None = None,
-):
-    """
-    Save polygons in Swiss-style pickle structure.
-
-    room_type:
-        0 = dwelling
-        1 = core
-    """
-
-    def _collect_polygon_parts(geoms):
-        if geoms is None:
-            return []
-
-        if not isinstance(geoms, (list, tuple)):
-            geoms = [geoms]
-
-        parts = []
-        for geom in geoms:
-            if geom is None:
-                continue
-
-            geom = clean_geom(geom)
-            if geom is None or geom.is_empty:
-                continue
-
-            parts.extend(polygon_parts(geom))
-
-        return parts
-
-    dwelling_parts = _collect_polygon_parts(dwelling_polygons)
-    core_parts = _collect_polygon_parts(core_polygons)
-
-    floorplan_data = {"floor_plan": []}
-
-    if building_id is not None:
-        floorplan_data["building_id"] = building_id
-
-    # keep core first, like your stairs-first example
-    for poly in core_parts:
-        floorplan_data["floor_plan"].append({
-            "polygon": poly,
-            "room_type": 1
-        })
-
-    for poly in dwelling_parts:
-        floorplan_data["floor_plan"].append({
-            "polygon": poly,
-            "room_type": 0
-        })
-
-    out_dir = os.path.dirname(out_path)
-    if out_dir:
-        os.makedirs(out_dir, exist_ok=True)
-
-    save_pickle(floorplan_data, out_path)
-
-    print(
-        f"Saved zoning pickle: {out_path} "
-        f"(cores: {len(core_parts)}, dwellings: {len(dwelling_parts)})"
-    )
-
-    return floorplan_data
 
 def get_type_sets():
     """

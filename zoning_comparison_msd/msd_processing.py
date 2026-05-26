@@ -195,6 +195,7 @@ def extract_building_footprint_from_apts_and_core(
     footprint = merged.buffer(outer_buffer, join_style=JOIN_STYLE.mitre) \
                  .buffer(inner_buffer, join_style=JOIN_STYLE.mitre)
 
+
     if footprint.geom_type == "MultiPolygon":
         footprint = max(footprint.geoms, key=lambda g: g.area)
 

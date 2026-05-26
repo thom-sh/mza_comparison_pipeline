@@ -241,7 +241,7 @@ def extract_gt_apartments(gt_path):
         core_union=core_union,
         outer_buffer=0.5,
         inner_buffer=-0.4,
-        simplify_tol=0.275,
+        simplify_tol=0.05,
     )
 
     core_polys = core_union_to_polygons(core_union)

@@ -1,9 +1,8 @@
-import os
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
-import networkx as nx
 
+from shapely.geometry import JOIN_STYLE
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from shapely.affinity import rotate as shp_rotate, translate as shp_translate
@@ -197,7 +196,7 @@ def load_gt_rooms_and_footprint(gt_path, footprint_smooth=(0.5, -0.4), simplify_
     fp = merged
     if footprint_smooth is not None:
         b1, b2 = footprint_smooth
-        fp = fp.buffer(b1).buffer(b2)
+        fp = fp.buffer(b1, join_style=JOIN_STYLE.mitre).buffer(b2, join_style=JOIN_STYLE.mitre)
 
     fp = largest_poly(fp.simplify(simplify_tol, preserve_topology=True))
     return fp, rooms, room_types
