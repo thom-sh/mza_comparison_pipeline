@@ -2,7 +2,8 @@ from scale_known import scale_known
 from scale_reference import scale_reference
 from scale_area import scale_area
 from display_polygons import display_polygons
-from save_pickle import classify_and_save_pickle   # <-- NEW
+from save_pickle import classify_and_save_pickle   
+from pathlib import Path
 
 import os
 
@@ -12,13 +13,14 @@ print("\n=== FLOORPLAN SCALING TOOL ===")
 # CONFIGURATION
 # --------------------------------------
 
-# Folder containing PDFs (each named buildingID.pdf)
-PDF_FOLDER = r"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\Footprints_final"
+PROJECT_DIR = Path(__file__).resolve().parent
 
-# OUTPUT folder for pickles
-OUTPUT_PICKLE_FOLDER = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
+PDF_FOLDER = PROJECT_DIR / "data" / "raw_rd"
+OUTPUT_PICKLE_FOLDER = PROJECT_DIR / "data" / "ground_truth"
 
-# Ask user for building ID
+OUTPUT_PICKLE_FOLDER.mkdir(parents=True, exist_ok=True)
+
+# Building IDs from 1 to 40
 building_id = 33
 
 # Compose PDF path automatically
