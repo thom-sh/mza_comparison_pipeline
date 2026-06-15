@@ -844,7 +844,7 @@ def set_common_limits(axes, polygons: List[Polygon], margin_ratio=0.08):
 def create_orientation_figure(result: OrientationResult, output_path: str, title_prefix: str = ""):
     apply_thesis_style()
 
-    fig, axes = plt.subplots(2, 2, figsize=(6.5, 5.5))
+    fig, axes = plt.subplots(2, 2, figsize=(6.14, 5.5))
     axes = axes.ravel()
 
     # -------------------- (a) Stored GT polygons --------------------

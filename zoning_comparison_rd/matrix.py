@@ -350,10 +350,50 @@ def evaluate_building(ID, GT_BASE, PRED_PATH, heatmap=True):
 
     iou_mat, inter_mat = compute_overlap_matrix(gt_regions, pred_zones_aligned)
 
-    metrics, stats = compute_region_metrics(gt_regions, pred_zones_aligned, iou_mat, inter_mat, region_labels)
+    metrics, stats = compute_region_metrics(
+        gt_regions,
+        pred_zones_aligned,
+        iou_mat,
+        inter_mat,
+        region_labels
+    )
 
+    # -----------------------------------------------------------
+    # Core-apartment topology check
+    # -----------------------------------------------------------
+    topology_stats = check_core_apartment_topology(
+        gt_regions=gt_regions,
+        region_labels=region_labels,
+        pred_zones_aligned=pred_zones_aligned,
+        metrics=metrics,
+        tol=0.05,
+        min_shared_length=0.30
+    )
+
+    # Add topology results to global stats
+    stats["topology_correct"] = int(topology_stats["topology_correct"])
+    stats["n_gt_core_apartment_edges"] = topology_stats["n_gt_core_apartment_edges"]
+    stats["n_pred_core_apartment_edges"] = topology_stats["n_pred_core_apartment_edges"]
+    stats["n_missing_core_apartment_edges"] = topology_stats["n_missing_core_apartment_edges"]
+    stats["n_extra_core_apartment_edges"] = topology_stats["n_extra_core_apartment_edges"]
+
+    stats["gt_core_apartment_edges"] = "; ".join(
+        [f"{a}-{b}" for a, b in topology_stats["gt_core_apartment_edges"]]
+    )
+    stats["pred_core_apartment_edges"] = "; ".join(
+        [f"{a}-{b}" for a, b in topology_stats["pred_core_apartment_edges"]]
+    )
+    stats["missing_core_apartment_edges"] = "; ".join(
+        [f"{a}-{b}" for a, b in topology_stats["missing_core_apartment_edges"]]
+    )
+    stats["extra_core_apartment_edges"] = "; ".join(
+        [f"{a}-{b}" for a, b in topology_stats["extra_core_apartment_edges"]]
+    )
+
+    # Existing building-level columns
     stats["n_gt_regions"] = len(gt_regions)
     stats["n_pred_regions"] = len(pred_zones_aligned)
+
 
     print("\nRegion | Pred | IoU | Cov | Frag | Purity | AreaErr% | Dist | Sim")
     print("--------------------------------------------------------------------")
@@ -378,7 +418,7 @@ def evaluate_building(ID, GT_BASE, PRED_PATH, heatmap=True):
         print(f"  {k}: {v}")
 
         # ===== SIMILARITY PLOT =====
-    plot_similarity_scores(ID, metrics)
+    # plot_similarity_scores(ID, metrics)
 
     return metrics, stats, iou_mat
 
@@ -428,23 +468,250 @@ def global_stats_to_row(stats, building_id):
     row["building_id"] = building_id
     return row
 
+
+### for topology comparison
+# ---------------------------------------------------------------
+#  Core-apartment topology check
+# ---------------------------------------------------------------
+
+def is_apartment_label(label):
+    """
+    Apartment labels in your comparison are A0, A1, A2, ...
+    """
+    return str(label).startswith("A")
+
+
+def is_core_label(label):
+    """
+    Core / stair labels in your comparison are S0, S1, ...
+    """
+    return str(label).startswith("S")
+
+
+def shared_boundary_length(poly_a, poly_b, tol=0.05):
+    """
+    Estimate shared or near-shared boundary length between two polygons.
+
+    Exact touches can fail because of tiny gaps/overlaps, so a small tolerance
+    is used around the boundaries.
+    """
+    if poly_a is None or poly_b is None:
+        return 0.0
+
+    if poly_a.is_empty or poly_b.is_empty:
+        return 0.0
+
+    # Exact shared boundary
+    exact = poly_a.boundary.intersection(poly_b.boundary).length
+    if exact > 0:
+        return exact
+
+    # Tolerance-based near-boundary overlap
+    near_ab = poly_a.boundary.buffer(tol).intersection(poly_b.boundary).length
+    near_ba = poly_b.boundary.buffer(tol).intersection(poly_a.boundary).length
+
+    return max(near_ab, near_ba)
+
+
+def build_core_apartment_edges(labels, polygons, tol=0.05, min_shared_length=0.30):
+    """
+    Build adjacency edges only between core and apartment regions.
+
+    Apartment-apartment and core-core contacts are ignored.
+
+    Returns
+    -------
+    edges : set of tuples
+        Example: {("A0", "S0"), ("A1", "S0")}
+    edge_details : list of dict
+        Useful for debugging / reporting shared boundary lengths.
+    """
+    edges = set()
+    edge_details = []
+
+    for i in range(len(polygons)):
+        for j in range(i + 1, len(polygons)):
+            li = labels[i]
+            lj = labels[j]
+
+            # Only core-apartment pairs are valid
+            valid_pair = (
+                (is_apartment_label(li) and is_core_label(lj)) or
+                (is_core_label(li) and is_apartment_label(lj))
+            )
+
+            if not valid_pair:
+                continue
+
+            shared_len = shared_boundary_length(polygons[i], polygons[j], tol=tol)
+
+            if shared_len >= min_shared_length:
+                edge = tuple(sorted([li, lj]))
+                edges.add(edge)
+
+                edge_details.append({
+                    "edge": edge,
+                    "shared_boundary_length": shared_len
+                })
+
+    return edges, edge_details
+
+
+def check_core_apartment_topology(
+    gt_regions,
+    region_labels,
+    pred_zones_aligned,
+    metrics,
+    tol=0.05,
+    min_shared_length=0.30
+):
+    """
+    Compare core-apartment adjacency topology between GT and prediction.
+
+    Steps:
+      1. Build core-apartment adjacency edges for GT regions.
+      2. Relabel matched predicted zones using GT labels.
+      3. Build core-apartment adjacency edges for matched predicted zones.
+      4. Compare missing and additional topology edges.
+
+    Parameters
+    ----------
+    gt_regions : list[Polygon]
+        GT apartment and core polygons.
+    region_labels : list[str]
+        GT labels, e.g. ["A0", "A1", "S0"].
+    pred_zones_aligned : list[Polygon]
+        Predicted zones after footprint alignment.
+    metrics : list[dict]
+        Output from compute_region_metrics().
+    tol : float
+        Boundary tolerance in metres.
+    min_shared_length : float
+        Minimum shared boundary length to count as adjacency.
+
+    Returns
+    -------
+    topology_stats : dict
+    """
+
+    # ---------- 1. GT topology ----------
+    gt_edges, gt_edge_details = build_core_apartment_edges(
+        labels=region_labels,
+        polygons=gt_regions,
+        tol=tol,
+        min_shared_length=min_shared_length
+    )
+
+    # ---------- 2. Relabel matched predicted zones ----------
+    pred_label_to_poly = {}
+
+    for m in metrics:
+        gt_label = m["region"]
+        assigned_zone = m["assigned_zone"]
+
+        if assigned_zone is None:
+            continue
+
+        try:
+            assigned_zone = int(assigned_zone)
+        except Exception:
+            continue
+
+        if assigned_zone < 0 or assigned_zone >= len(pred_zones_aligned):
+            continue
+
+        pred_label_to_poly[gt_label] = pred_zones_aligned[assigned_zone]
+
+    matched_pred_labels = []
+    matched_pred_polys = []
+
+    for label in region_labels:
+        if label in pred_label_to_poly:
+            matched_pred_labels.append(label)
+            matched_pred_polys.append(pred_label_to_poly[label])
+
+    # ---------- 3. Predicted topology after relabelling ----------
+    pred_edges, pred_edge_details = build_core_apartment_edges(
+        labels=matched_pred_labels,
+        polygons=matched_pred_polys,
+        tol=tol,
+        min_shared_length=min_shared_length
+    )
+
+    # ---------- 4. Compare topology ----------
+    missing_edges = gt_edges - pred_edges
+    extra_edges = pred_edges - gt_edges
+
+    topology_correct = (len(missing_edges) == 0 and len(extra_edges) == 0)
+
+    topology_stats = {
+        "topology_correct": topology_correct,
+        "n_gt_core_apartment_edges": len(gt_edges),
+        "n_pred_core_apartment_edges": len(pred_edges),
+        "n_missing_core_apartment_edges": len(missing_edges),
+        "n_extra_core_apartment_edges": len(extra_edges),
+        "gt_core_apartment_edges": sorted(list(gt_edges)),
+        "pred_core_apartment_edges": sorted(list(pred_edges)),
+        "missing_core_apartment_edges": sorted(list(missing_edges)),
+        "extra_core_apartment_edges": sorted(list(extra_edges)),
+        "gt_edge_details": gt_edge_details,
+        "pred_edge_details": pred_edge_details,
+    }
+
+    return topology_stats
+
+
 if __name__ == "__main__":
+
+    # SWISS_DATASET_ROOT = r"C:\WF\Thomas Sharon\Floorplan_Dataset\msd_pickle"
+    # PREDICTED_FOLDER   = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\building_data"
+
+    # OUTPUT_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\comparison_logic"
 
     SWISS_DATASET_ROOT = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
     PREDICTED_FOLDER   = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\building_data"
 
     OUTPUT_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output"
+
+
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    REGION_CSV = os.path.join(OUTPUT_DIR, "all_region_metrics.csv")
-    GLOBAL_CSV = os.path.join(OUTPUT_DIR, "all_global_stats.csv")
+    # REGION_CSV = os.path.join(OUTPUT_DIR, "all_region_metrics_selected_200.csv")
+    # GLOBAL_CSV = os.path.join(OUTPUT_DIR, "all_global_stats_selected_200.csv")
+
+    REGION_CSV = os.path.join(OUTPUT_DIR, "all_region_metrics_rd_final.csv")
+    GLOBAL_CSV = os.path.join(OUTPUT_DIR, "all_global_stats_rd_final.csv")
+
 
     all_region_rows = []
     all_global_rows = []
 
-    # building_ids = [1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,19,20,21,22]
+    # building_ids = [1827]
     # building_ids = [23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44]
-    building_ids = [33]
+    # building_ids = [
+    # 68, 75, 179, 329, 467, 696, 807, 1291, 1321, 1361, 1575, 1588, 1595,
+    # 1601, 1663, 1686, 1712, 1728, 1817, 1925, 1934, 1953, 1996, 2018, 2030,
+    # 2049, 2136, 2244, 2389, 2401, 2410, 2540, 2568, 2896, 3002, 3057, 3283,
+    # 3594, 3669, 4026, 4234, 4239, 4258, 4321, 4832, 5069, 5086, 5102, 5103,
+    # 5319, 5322, 5863, 6362, 6370, 6599, 6676, 7299, 7343, 7737, 7760, 7792,
+    # 7824, 7869, 7899, 7914, 7916, 8039, 8202, 8241, 8260, 8264, 8308, 8309,
+    # 8314, 8412, 8413, 8443, 8447, 8460, 8549, 8851, 8860, 8863, 8866, 8877,
+    # 8881, 9205, 9678, 9729, 10277, 10388, 10405, 10655, 10959, 11226, 11434,
+    # 11818, 11906, 11967, 13488, 13544, 13858, 14016, 14063, 14123, 14128,
+    # 14131, 14747, 14818, 14819, 14881, 14897, 15364, 22206, 22211, 22844,
+    # 22886, 23213, 23246, 23562, 23865, 23871, 24153, 24173, 24288, 24472,
+    # 24476, 24501, 24542, 24966, 25184, 25307, 25320, 25947, 26170, 26175,
+    # 26471, 26593, 26653, 26838, 26858, 26939, 28611, 28949, 29270, 29399,
+    # 29686, 29729, 30405, 30453, 39307, 42392, 43687, 44248, 44871, 45570,
+    # 45576, 45631, 45644, 45658, 45724, 46073, 46492, 47229, 47492, 48408,
+    # 48966, 49004, 49035, 49051, 49320, 49951, 50528, 50530, 50537, 51001,
+    # 51680, 51693, 176, 322, 405, 553, 712, 721, 803, 993, 1827, 1943, 1976,
+    # 2801, 3039, 3616, 5325, 7801, 8364, 8424, 9222, 9682, 10288, 10376]
+
+    # building_ids = [1827, 1925, 2030, 6599, 7801, 8364, 11818, 14819, 23871, 26175, 28611, 30405, 30453, 45570, 45631, 45658, 46492]
+    # building_ids = [30405, 28611, 26175, 23871, 14819, 11818, 8364, 7801, 6599, 2030, 1925, 1827]
+    building_ids = [39]
+
 
     for bid in building_ids:
         GT_BASE = os.path.join(SWISS_DATASET_ROOT, f"{bid}.pickle")

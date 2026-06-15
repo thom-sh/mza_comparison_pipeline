@@ -11,19 +11,19 @@ from gml_footprint_replacer import replace_building_footprint
 # === CONFIGURATION ===
 
 # Folder containing Swiss *.pickle files
-DATAPATH = r"C:\WF\Thomas Sharon\Floorplan_Dataset\msd_pickle"
+DATAPATH = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
 
 # Input CityGML file
-INPUT_GML = r"C:\Sharon\rom_auto_multizoning_rd\data\LoD2_Berlin_Moabit_neu.gml"
+INPUT_GML = r"D:\Sharon\rom_auto_multizoning_rd\data\LoD2_Berlin_Moabit_neu.gml"
 
 # ===== MULTIPLE SWISS BUILDING IDS HERE =====
-BUILDING_IDS = [75]     # ← EDIT THIS LIST
+BUILDING_IDS = [33]     # ← EDIT THIS LIST
 
 # Target building ID inside the CityGML
 TARGET_GML_ID = "DEBE01YYK0002Uqm"
 
 # Output folder
-OUTPUT_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd_trial"
+OUTPUT_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd"
 
 
 # === MAIN PIPELINE ===

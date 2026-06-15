@@ -11,7 +11,7 @@ from shapely.affinity import rotate as shp_rotate, translate as shp_translate
 from utils_apt import load_pickle
 from constants_apt import ROOM_NAMES
 
-from msd_processing import (
+from msd_processing_patched import (
     get_type_sets,
     remove_auxiliary_rooms,
     detect_apartments_and_core_nodes,

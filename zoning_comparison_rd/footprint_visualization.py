@@ -7,6 +7,7 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from shapely.affinity import rotate as shp_rotate, translate as shp_translate
 
+
 # ======================================================================
 # SECTION 1 — Generic Geometry Utilities
 # ======================================================================
@@ -132,7 +133,7 @@ def align_pred(pred_poly, gt_poly,
 
         if iou > best_iou:
             best_iou = iou
-            best_rot = rot_norm
+            best_rot = rot_norm 
             best_dx = dx
             best_dy = dy
             best_poly = p_aligned

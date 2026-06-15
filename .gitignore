@@ -1,0 +1,30 @@
+# Conda / local environments
+.conda/
+.env/
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+~$*
+repo_tree.txt
+
+# Logs
+*.log
+
+# Local editor settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
