@@ -17,7 +17,7 @@ from constants_apt import ROOM_NAMES
 
 def load_graph(datapath: str, building_id: int):
     """Load MSD graph_out pickle for a given building ID."""
-    path = os.path.join(datapath, "graph_out", f"{building_id}.pickle")
+    path = os.path.join(datapath, f"{building_id}.pickle")
     if not os.path.exists(path):
         raise FileNotFoundError(f"File not found: {path}")
     return load_pickle(path)

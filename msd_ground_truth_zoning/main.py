@@ -14,7 +14,7 @@ from msd_processing import (
 
 
 def load_building_ids(ids_file: Path) -> list[int]:
-    ids = []
+    ids = [75]
 
     with ids_file.open("r", encoding="utf-8") as f:
         for line in f:

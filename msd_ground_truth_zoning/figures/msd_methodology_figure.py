@@ -36,6 +36,10 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from shapely.geometry import Polygon
 
+
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_DIR))
+
 from msd_processing import (
     load_graph,
     remove_auxiliary_rooms,
@@ -50,10 +54,7 @@ from msd_processing import (
     get_type_sets,
 )
 
-# Parent folder
 
-PROJECT_DIR = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_DIR))
 
 # -----------------------------------------------------------------------------
 # Global plot style
@@ -130,7 +131,7 @@ class WorkflowResult:
     core_nodes: Set[int]
     apartment_polygons_raw: List
     apartment_polygons_filled: List
-    core_union: object | None
+    core_polygons: List
     footprint: object
     residual_gap: object | None
     entrance_edges_original: List[Tuple[int, int]]
@@ -282,7 +283,7 @@ def run_workflow(datapath: str, building_id: int) -> WorkflowResult:
         buffer_amt=0.08,
     )
 
-    core_union = extract_core_union_from_nodes(
+    core_polygons = extract_core_union_from_nodes(
         processed,
         core_nodes,
         buffer_amt=0.15,
@@ -290,15 +291,15 @@ def run_workflow(datapath: str, building_id: int) -> WorkflowResult:
 
     footprint = extract_building_footprint_from_apts_and_core(
         apartment_polygons=apartment_polys_raw,
-        core_union=core_union,
-        outer_buffer=0.50,
-        inner_buffer=-0.40,
-        simplify_tol=0.05,
+        core_polygons=core_polygons,
+        outer_buffer=0.45,
+        inner_buffer=-0.35,
+        simplify_tol=0.03,
     )
 
     apartment_polys_filled, residual_gap = simultaneous_apartment_growth(
         apartment_polygons=apartment_polys_raw,
-        core_union=core_union,
+        core_polygons=core_polygons,
         footprint=footprint,
         step=0.03,
         max_iter=400,
@@ -314,7 +315,7 @@ def run_workflow(datapath: str, building_id: int) -> WorkflowResult:
         core_nodes=core_nodes,
         apartment_polygons_raw=apartment_polys_raw,
         apartment_polygons_filled=apartment_polys_filled,
-        core_union=core_union,
+        core_polygons=core_polygons,
         footprint=footprint,
         residual_gap=residual_gap,
         entrance_edges_original=entrance_edges(processed),
@@ -483,14 +484,16 @@ def plot_methodology_figure(
             alpha=0.96,
         )
 
-    draw_union(
-        ax_d,
-        result.core_union,
-        facecolor=CORE_COLOR,
-        edgecolor="#777d84",
-        linewidth=None,
-        alpha=0.96,
-    )
+    for core in result.core_polygons:
+        draw_union(
+            ax_d,
+            core,
+            facecolor=CORE_COLOR,
+            edgecolor="#777d84",
+            linewidth=None,
+            alpha=0.96,
+        )
+
     add_panel_label(ax_d, "(d)")
 
     # ------------------------------------------------------------------
@@ -506,7 +509,7 @@ def plot_methodology_figure(
         for i in range(len(result.apartment_polygons_filled))
     ]
     dwelling_handles.append(
-        Patch(facecolor=CORE_COLOR, edgecolor=None, label="Core")
+        Patch(facecolor=CORE_COLOR, edgecolor=None, label="Stairwell")
     )
 
     dwelling_legend_ax.legend(
@@ -536,8 +539,8 @@ def plot_methodology_figure(
             all_geoms.append(poly)
 
     all_geoms.extend([g for g in result.apartment_polygons_filled if g is not None])
-    if result.core_union is not None:
-        all_geoms.append(result.core_union)
+    
+    all_geoms.extend([g for g in result.core_polygons if g is not None])
 
     set_consistent_extent([ax_a, ax_b, ax_c, ax_d], all_geoms)
 
@@ -563,7 +566,13 @@ def plot_methodology_figure(
 # Main
 # -----------------------------------------------------------------------------
 def main() -> None:
-    datapath = r"C:\WF\Thomas Sharon\Floorplan_Dataset\archive\modified-swiss-dwellings-v2\train"
+
+    # Parent folder
+
+    PROJECT_DIR = Path(__file__).resolve().parents[1]
+    sys.path.insert(0, str(PROJECT_DIR))
+
+    datapath = PROJECT_DIR / "data" / "raw_msd"
     BUILDING_IDS = [75]
 
     for building_id in BUILDING_IDS:
