@@ -5,11 +5,35 @@ import matplotlib.pyplot as plt
 # ===============================================================
 # CONFIG
 # ===============================================================
-GLOBAL_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\all_global_stats_rd_final.csv"
 
-OUT_DIAGNOSTIC_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\diagnostic_table_with_topology_rd_final.csv"
-OUT_COUNTS_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\diagnostic_category_counts_with_topology_rd_final.csv"
+# zoning_comparison_metrics/
+PROJECT_DIR = Path(__file__).resolve().parent
+REPO_DIR = PROJECT_DIR.parent
 
+DATASET = "rd"
+
+OUTPUT_DIR = (
+    PROJECT_DIR
+    / "output"
+    / DATASET
+)
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+GLOBAL_CSV = (
+    REPO_DIR / "zoning_comparison" / "output" / DATASET 
+    / "all_global_stats_rd.csv"
+)
+
+OUT_DIAGNOSTIC_CSV = (
+    OUTPUT_DIR
+    / "diagnostic_table_with_topology_rd.csv"
+)
+
+OUT_COUNTS_CSV = (
+    OUTPUT_DIR
+    / "diagnostic_category_counts_with_topology_rd.csv"
+)
 
 # Thresholds: adjust if needed
 GOOD_IOU = 0.70
@@ -341,8 +365,8 @@ def main():
 
     # Diagnosis
     df["diagnosis"] = df.apply(classify_case, axis=1)
-    OUT_FIG_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\figures"
-
+    OUT_FIG_DIR = OUTPUT_DIR / "figures"
+    
     plot_diagnostics(df, OUT_FIG_DIR)
 
     # Keep useful columns for thesis appendix/table

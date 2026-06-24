@@ -181,7 +181,7 @@ def plot_model_comparison(results_df, output_dir):
     """
     df_plot = results_df.sort_values("MAE_m2", ascending=True).copy()
 
-    fig, ax = plt.subplots(figsize=(5.8, 2.8))
+    fig, ax = plt.subplots(figsize=(6.14, 2.8))
 
     colors = []
     for model in df_plot["model"]:
@@ -232,7 +232,7 @@ def plot_final_fit(g, final_model_name, final_model_object, final_breaks, output
     """
     Plot 2: Footprint area vs observed target with final refitted model.
     """
-    fig, ax = plt.subplots(figsize=(5.8, 2.8))
+    fig, ax = plt.subplots(figsize=(6.14, 2.8))
 
     ax.scatter(
         g["A"],
@@ -247,7 +247,7 @@ def plot_final_fit(g, final_model_name, final_model_object, final_breaks, output
 
     A_plot = np.linspace(g["A"].min(), g["A"].max(), 600)
 
-    if final_model_name.startswith("M2"):
+    if final_model_name.startswith("Piecewise"):
         y_plot = predict_piecewise(A_plot, final_model_object, final_breaks)
 
         ax.plot(
@@ -312,7 +312,7 @@ def plot_predicted_vs_observed(test_best, output_dir):
     mn = min(np.min(y), np.min(yhat))
     mx = max(np.max(y), np.max(yhat))
 
-    fig, ax = plt.subplots(figsize=(5.8, 3.6))
+    fig, ax = plt.subplots(figsize=(6.14, 3.6))
 
     ax.scatter(
         y,
@@ -502,7 +502,7 @@ def main():
 
     results.append(
         evaluate_model(
-            "B0_constant_training_mean",
+            "Constant training mean",
             test["y"].values,
             test["yhat_B0"].values,
         )
@@ -511,7 +511,7 @@ def main():
     prediction_tables.append(
         test[["building_id", "A", "y", "yhat_B0"]]
         .rename(columns={"yhat_B0": "yhat"})
-        .assign(model="B0_constant_training_mean")
+        .assign(model="Constant training mean")
     )
 
     # ============================================================
@@ -524,7 +524,7 @@ def main():
 
     results.append(
         evaluate_model(
-            "B1_simple_linear_regression",
+            "Simple linear regression",
             test["y"].values,
             test["yhat_B1"].values,
         )
@@ -533,7 +533,7 @@ def main():
     prediction_tables.append(
         test[["building_id", "A", "y", "yhat_B1"]]
         .rename(columns={"yhat_B1": "yhat"})
-        .assign(model="B1_simple_linear_regression")
+        .assign(model="Simple linear regression")
     )
 
     # ============================================================
@@ -546,7 +546,7 @@ def main():
             models, breaks = fit_piecewise_linear(train, breaks)
             yhat = predict_piecewise(test["A"].values, models, breaks)
 
-            model_name = f"M2_piecewise_linear_K{K}"
+            model_name = f"Piecewise linear K{K}"
 
             results.append(
                 evaluate_model(
@@ -604,7 +604,7 @@ def main():
     final_model_object = None
     final_breaks = tuple()
 
-    if best_model_name.startswith("M2_piecewise_linear"):
+    if best_model_name.startswith("Piecewise linear"):
         final_K = int(best_model_name.split("K")[-1])
 
         final_breaks = make_quantile_breaks(g["A"].values, final_K)
@@ -612,7 +612,7 @@ def main():
         final_model_object = final_models
 
         print("\n=== FINAL REFIT MODEL ON FULL DATASET ===")
-        print(f"Selected model: M2_piecewise_linear_K{final_K}")
+        print(f"Selected model: Piecewise linear K{final_K}")
         print("Final breakpoints based on full cleaned dataset:")
 
         for b in final_breaks:
@@ -656,7 +656,7 @@ def main():
         g_final = g.copy()
         g_final["yhat_final"] = predict_piecewise(g_final["A"].values, final_models, final_breaks)
 
-    elif best_model_name == "B1_simple_linear_regression":
+    elif best_model_name == "Simple linear regression":
         final_b1 = LinearRegression()
         final_b1.fit(g[["A"]], g["y"])
         final_model_object = final_b1
@@ -665,7 +665,7 @@ def main():
         beta = float(final_b1.coef_[0])
 
         print("\n=== FINAL REFIT MODEL ON FULL DATASET ===")
-        print("Selected model: B1_simple_linear_regression")
+        print("Selected model: Simple linear regression")
         print(f"Final equation: y_hat = {alpha:.4f} + {beta:.6f} * A_fp")
 
         final_params.append({
@@ -682,7 +682,7 @@ def main():
         g_final = g.copy()
         g_final["yhat_final"] = final_b1.predict(g_final[["A"]])
 
-    elif best_model_name == "B0_constant_training_mean":
+    elif best_model_name == "Constant training mean":
         final_b0_value = float(g["y"].mean())
         final_model_object = final_b0_value
 

@@ -1,0 +1,30 @@
+{
+  "step": 2,
+  "repo_root": "C:\\Sharon\\mza_sensitivity_analysis",
+  "variant_keys": [
+    "V3",
+    "V5"
+  ],
+  "weather_options": [
+    "TRY_A",
+    "TRY_B"
+  ],
+  "N_samples": 1,
+  "S_seeds": 1,
+  "n_buildings": 8,
+  "n_tasks": 2,
+  "dry_run": false,
+  "continue_on_error": false,
+  "paths": {
+    "AIXLIB_MO": "C:\\Sharon\\mza_sensitivity_analysis\\external\\AixLib\\AixLib\\package.mo",
+    "BUILDING_DATA_CSV": "C:\\Sharon\\mza_sensitivity_analysis\\data\\building_data\\building_data_merged.csv",
+    "BUILDING_DATA_PKL": "C:\\Sharon\\mza_sensitivity_analysis\\data\\building_data\\building_data_merged.pkl",
+    "TEASER_BASE": "C:\\Sharon\\mza_sensitivity_analysis\\teaser_models\\sensitivity_analysis",
+    "OUT_BASE": "C:\\Sharon\\mza_sensitivity_analysis\\results\\sa_results",
+    "WEATHER_DIR": "C:\\Sharon\\mza_sensitivity_analysis\\data\\weather",
+    "MOS_FILES": {
+      "TRY_A": "C:\\Sharon\\mza_sensitivity_analysis\\data\\weather\\UnknownStationID_20110101_20111231_Napoli-Capodichino.AP.mos",
+      "TRY_B": "C:\\Sharon\\mza_sensitivity_analysis\\data\\weather\\UnknownStationID_20150101_20151231_Munchen.mos"
+    }
+  }
+}

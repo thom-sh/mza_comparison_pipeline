@@ -3,15 +3,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
+from pathlib import Path
+
 # ===============================================================
 # CONFIG
 # ===============================================================
-MSD_GLOBAL_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\comparison_logic\all_global_stats_selected_200.csv"
-REAL_ESTATE_GLOBAL_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\all_global_stats_rd_final.csv"
 
-OUT_FIG_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\comparison_logic\figures"
-OUT_PDF = "diagnostic_outcome_groups_msd_real_estate_grouped_percentage.pdf"
-# OUT_PNG = "diagnostic_outcome_groups_msd_real_estate_grouped_percentage.png"
+# If this script is inside zoning_comparison_metrics/
+PROJECT_DIR = Path(__file__).resolve().parent
+REPO_DIR = PROJECT_DIR.parent
+
+MSD_GLOBAL_CSV = (
+    REPO_DIR / "zoning_comparison"
+    / "output"
+    / "msd"
+    / "all_global_stats_msd.csv"
+)
+
+REAL_ESTATE_GLOBAL_CSV = (
+    REPO_DIR / "zoning_comparison"
+    / "output"
+    / "rd"
+    / "all_global_stats_rd.csv"
+)
+
+OUT_FIG_DIR = (
+    PROJECT_DIR
+    / "output"
+    / "combined"
+    / "figures"
+)
+
+OUT_PDF = "diagnostic_outcome_groups_msd_rd_grouped_percentage.pdf"
 
 FIGSIZE = (6.4, 2.8)
 

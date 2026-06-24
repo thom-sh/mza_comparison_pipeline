@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 from shapely.affinity import rotate
 from shapely.geometry import JOIN_STYLE, LineString, Point, Polygon, shape
 from shapely.geometry.base import BaseGeometry
@@ -702,7 +703,7 @@ def add_midpoint(ax, point_xy, label: Optional[str] = None):
         facecolor="white",
         edgecolor=CORE_COLOR,
         linewidth=0.9,
-        label="Core edge midpoint",
+        label="Stairwell edge midpoint",
         zorder=12,
     )
 
@@ -866,7 +867,7 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
             poly,
             facecolor=CORE_COLOR,
             alpha=1.0,
-            label="Core" if i == 0 else None,
+            label="Stairwell" if i == 0 else None,
             zorder=2,
         )
         plot_polygon(ax, poly, linewidth=1.1, color=CORE_EDGE_COLOR, zorder=4)
@@ -895,12 +896,12 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
             linewidth=1.0,
             linestyle="--",
             color=CORE_COLOR,
-            label="Core before orientation" if i == 0 else None,
+            label="Stairwell before orientation" if i == 0 else None,
             zorder=5,
         )
 
     ax.set_title("")
-    thesis_legend(ax)
+    thesis_legend(ax, loc="upper left")
     set_axis_format(ax)
     # add_panel_label_below(ax, "(b)")
 
@@ -997,7 +998,7 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
             linewidth=1.0,
             linestyle="--",
             color=CORE_EDGE_COLOR,
-            label="Core after orientation" if i == 0 else None,
+            label="Stairwell after orientation" if i == 0 else None,
             zorder=5,
         )
 
@@ -1057,15 +1058,28 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
 
 def main():
     # ========================================================
-    # CONFIGURATION: edit these paths only
-    # ========================================================
-    DATAPATH = r"C:\WF\Thomas Sharon\Floorplan_Dataset\msd_pickle"
-    BUILDING_ID = 75
-    OUTPUT_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd"
+    # CONFIGURATION: edit these only
     # ========================================================
 
-    pickle_path = os.path.join(DATAPATH, f"{BUILDING_ID}.pickle")
-    output_path = os.path.join(OUTPUT_DIR, f"orientation_workflow_{BUILDING_ID}.pdf")
+    # If this script is inside:
+    # gml_footprint_replacement/figures/scripts/
+    PROJECT_DIR = Path(__file__).resolve().parents[1]
+    REPO_DIR = PROJECT_DIR.parent
+
+    BUILDING_ID = 75
+
+    # Ground-truth pickle folder
+    DATAPATH = REPO_DIR / "msd_ground_truth_extraction" / "data" / "ground_truth"
+
+    # Output folder for this figure
+    OUTPUT_DIR = PROJECT_DIR / "figures" / "output" 
+
+    # ========================================================
+
+    pickle_path = DATAPATH / f"{BUILDING_ID}.pickle"
+    output_path = OUTPUT_DIR / f"orientation_workflow_{BUILDING_ID}.pdf"
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     result = process_case(pickle_path)
 

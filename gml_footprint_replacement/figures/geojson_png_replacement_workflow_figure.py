@@ -14,6 +14,7 @@ from typing import Optional
 
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.collections import PatchCollection
 
@@ -194,17 +195,25 @@ def main():
     # ========================================================
     # CONFIGURATION: edit these paths only
     # ========================================================
-    GEOJSON_PATH = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_msd\footprint\footprint_75.geojson"
-    PNG_PATH = r"C:\WF\Thomas Sharon\Master_Thesis_Report\for_plotting_reference\citygml_75.png"
-    OUTPUT_PATH = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\citygml_replacement_workflow_75.pdf"
+    # gml_footprint_replacement/figures/scripts/
+    PROJECT_DIR = Path(__file__).resolve().parents[1]
 
-    FIGURE_TITLE = "CityGML footprint replacement workflow — Building 75"
+    BUILDING_ID = 75
+    DATASET = "msd"
+
+    GEOJSON_PATH = PROJECT_DIR / "data" / DATASET / "footprint" / f"footprint_{BUILDING_ID}.geojson"
+
+    PNG_PATH = PROJECT_DIR / "figures" / "input" / f"citygml_{BUILDING_ID}.png"
+
+    OUTPUT_PATH = PROJECT_DIR / "figures" / "output" / f"citygml_replacement_workflow_{BUILDING_ID}.pdf"
+
+    FIGURE_TITLE = f"CityGML footprint replacement workflow — Building {BUILDING_ID}"
     # ========================================================
 
     create_two_panel_figure(
-        geojson_path=GEOJSON_PATH,
-        png_path=PNG_PATH,
-        output_path=OUTPUT_PATH,
+        geojson_path=str(GEOJSON_PATH),
+        png_path=str(PNG_PATH),
+        output_path=str(OUTPUT_PATH),
         figure_title=FIGURE_TITLE,
     )
 

@@ -1,0 +1,6 @@
+diagnostic_category,number_of_buildings
+Good geometric match,30
+Moderate geometric match,4
+Structural mismatch,4
+Over-zoned,1
+High area error / shifted zones,1

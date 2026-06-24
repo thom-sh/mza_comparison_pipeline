@@ -5,16 +5,35 @@ import matplotlib.pyplot as plt
 # ===============================================================
 # CONFIG
 # ===============================================================
-GLOBAL_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\comparison_logic\all_global_stats_selected_200.csv"
 
-OUT_DIAGNOSTIC_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\comparison_logic\diagnostic_table_with_topology_200.csv"
-OUT_COUNTS_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\comparison_logic\diagnostic_category_counts_with_topology_200.csv"
+# zoning_comparison_metrics/
+PROJECT_DIR = Path(__file__).resolve().parent
+REPO_DIR = PROJECT_DIR.parent
 
-# GLOBAL_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\all_global_stats_rd_final.csv"
+DATASET = "msd"
 
-# OUT_DIAGNOSTIC_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\diagnostic_table_with_topology_rd_final.csv"
-# OUT_COUNTS_CSV = r"C:\WF\Thomas Sharon\Floorplan_Dataset\gml_rd\comparison_output\diagnostic_category_counts_with_topology_rd_final.csv"
+OUTPUT_DIR = (
+    PROJECT_DIR
+    / "output"
+    / DATASET
+)
 
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+GLOBAL_CSV = (
+    REPO_DIR / "zoning_comparison" / "output" / DATASET 
+    / "all_global_stats_msd.csv"
+)
+
+OUT_DIAGNOSTIC_CSV = (
+    OUTPUT_DIR
+    / "diagnostic_table_with_topology_msd.csv"
+)
+
+OUT_COUNTS_CSV = (
+    OUTPUT_DIR
+    / "diagnostic_category_counts_with_topology_msd.csv"
+)
 
 # Thresholds: adjust if needed
 GOOD_IOU = 0.70
@@ -257,7 +276,7 @@ def plot_diagnostics(df, out_dir=None):
 
     if out_dir is not None:
         fig.savefig(
-            out_dir / "diagnostic_category_percentages.pdf",
+            out_dir / "diagnostic_category_percentages_msd.pdf",
             bbox_inches="tight",
             dpi=300,
         )
@@ -331,7 +350,7 @@ def plot_diagnostics(df, out_dir=None):
 
     if out_dir is not None:
         fig.savefig(
-            out_dir / "mean_iou_by_diagnostic_category.pdf",
+            out_dir / "mean_iou_by_diagnostic_category_msd.pdf",
             bbox_inches="tight",
             dpi=300,
         )
@@ -346,8 +365,8 @@ def main():
 
     # Diagnosis
     df["diagnosis"] = df.apply(classify_case, axis=1)
-    OUT_FIG_DIR = r"C:\WF\Thomas Sharon\Floorplan_Dataset\comparison_logic\figures"
-
+    OUT_FIG_DIR = OUTPUT_DIR / "figures"
+    
     plot_diagnostics(df, OUT_FIG_DIR)
 
     # Keep useful columns for thesis appendix/table

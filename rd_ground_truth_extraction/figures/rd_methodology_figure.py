@@ -8,14 +8,22 @@ from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.patches import Patch
 from shapely.geometry import Polygon, MultiPolygon
 from shapely.ops import unary_union
-
+import sys
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
-BUILDING_ID = 17
-PDF_PATH = fr"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\Footprints_final\{BUILDING_ID}.pdf"
-OUTPUT_FIGURE = fr"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\rd_groundtruth_workflow_{BUILDING_ID}.pdf"
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_DIR))
+
+BUILDING_ID = 20
+
+PDF_PATH = PROJECT_DIR / "data" / "raw_rd" / f"{BUILDING_ID}.pdf"
+
+OUTPUT_DIR = PROJECT_DIR / "figures" / "output"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+OUTPUT_FIGURE = OUTPUT_DIR / f"rd_groundtruth_workflow_{BUILDING_ID}.pdf"
 
 # Indices of polygons that represent the core/stair space.
 # These indices refer to the drawing order during digitisation, starting from 0.
@@ -30,7 +38,7 @@ SNAP_TO_EXISTING_POINTS = True
 SNAP_DISTANCE_PX = 12
 
 # Area labels in panel (c)
-SHOW_AREA_LABELS = False
+SHOW_AREA_LABELS = True
 AREA_LABEL_DECIMALS = 0
 MIN_AREA_LABEL_M2 = 0.0
 
@@ -576,7 +584,7 @@ def add_area_label(ax, geom):
         label,
         ha="center",
         va="center",
-        fontsize=9,
+        fontsize=7,
         bbox=dict(
             facecolor="white",
             edgecolor=POLYGON_EDGE_COLOR,
@@ -723,7 +731,7 @@ def plot_classified(ax, records, add_legend=True, show_box=False):
             Patch(
                 facecolor=CORE_COLOR,
                 edgecolor="none",
-                label="Core"
+                label="Stairwell"
             )
         )
 
@@ -759,7 +767,7 @@ def create_workflow_figure(img_crop, polygons_px, polygons_m, classified_records
       (c) Scaled polygons with area labels
       (d) Classified dwellings and core
     """
-    fig = plt.figure(figsize=(8.27, 5.4))
+    fig = plt.figure(figsize=(6.14, 3.5))
     gs = fig.add_gridspec(2, 2, wspace=0.12, hspace=0.28)
 
     ax_a = fig.add_subplot(gs[0, 0])
@@ -809,7 +817,6 @@ def create_workflow_figure(img_crop, polygons_px, polygons_m, classified_records
     plt.close()
 
     print(f"Saved PDF figure: {output_path}")
-    print(f"Saved PNG preview: {png_path}")
 
 
 # ============================================================

@@ -1,0 +1,77 @@
+{
+  "step": 4,
+  "method": "sobol_saltelli",
+  "repo_root": "/home/waiz_kv/mza_sensitivity_analysis",
+  "variant": "V3",
+  "building_id": "DESHPDHK0000lce9_3",
+  "retrofit_state_fixed": "standard",
+  "weathers": [
+    "TRY_A",
+    "TRY_B"
+  ],
+  "k_sob": 6,
+  "n_sob": 128,
+  "s_seed": 1,
+  "runs_per_case": 1024,
+  "runs_total": 2048,
+  "runs_to_run": 2048,
+  "runs_skipped_completed": 0,
+  "overwrite_existing_results": false,
+  "continue_on_error": true,
+  "params": [
+    {
+      "name": "baseACH",
+      "lo": 0.05,
+      "hi": 0.5,
+      "kind": "record_global",
+      "target_key": "baseACH"
+    },
+    {
+      "name": "yoc_shift",
+      "lo": -1.0,
+      "hi": 1.0,
+      "kind": "yoc_shift",
+      "target_key": "yoc_shift"
+    },
+    {
+      "name": "tset_mean_C",
+      "lo": 20.5,
+      "hi": 21.5,
+      "kind": "setpoints",
+      "target_key": "tset_mean_C"
+    },
+    {
+      "name": "shadingFactor",
+      "lo": 0.3,
+      "hi": 1.0,
+      "kind": "record_global",
+      "target_key": "shadingFactor"
+    },
+    {
+      "name": "gWin",
+      "lo": 0.45,
+      "hi": 0.75,
+      "kind": "record_global",
+      "target_key": "gWin"
+    },
+    {
+      "name": "gains_scale",
+      "lo": 0.8,
+      "hi": 1.2,
+      "kind": "sa_params",
+      "target_key": "gains_scale"
+    }
+  ],
+  "paths": {
+    "AIXLIB_MO": "/home/waiz_kv/mza_sensitivity_analysis/external/AixLib/AixLib/package.mo",
+    "BUILDING_DATA_PKL": "/home/waiz_kv/mza_sensitivity_analysis/data/building_data/building_data_merged.pkl",
+    "BUILDING_DATA_CSV": "/home/waiz_kv/mza_sensitivity_analysis/data/building_data/building_data_merged.csv",
+    "TEASER_BASE": "/home/waiz_kv/mza_sensitivity_analysis/teaser_models/sensitivity_analysis",
+    "OUT_BASE": "/home/waiz_kv/mza_sensitivity_analysis/results/sa_step4_sobol",
+    "MOS_FILES": {
+      "TRY_A": "/home/waiz_kv/mza_sensitivity_analysis/data/weather/UnknownStationID_20110101_20111231_Napoli-Capodichino.AP.mos",
+      "TRY_B": "/home/waiz_kv/mza_sensitivity_analysis/data/weather/UnknownStationID_20150101_20151231_Munchen.mos"
+    }
+  },
+  "dry_run": false
+}

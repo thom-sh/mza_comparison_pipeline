@@ -1,0 +1,112 @@
+{
+  "step": 3,
+  "method": "morris",
+  "repo_root": "/home/waiz_kv/mza_sensitivity_analysis",
+  "variants": [
+    "V1",
+    "V3",
+    "V5"
+  ],
+  "weather_key": "TRY_C",
+  "building_ids_by_variant": {
+    "V1": "DESHPDHK0000lce9_1",
+    "V3": "DESHPDHK0000lce9_3",
+    "V5": "DESHPDHK0000lce9_5"
+  },
+  "retrofit_state_fixed": "standard",
+  "k": 10,
+  "r": 16,
+  "levels": 6,
+  "sm": 1,
+  "n_tasks_total": 528,
+  "n_tasks_to_run": 528,
+  "n_tasks_skipped_completed": 0,
+  "overwrite_existing_results": true,
+  "expected_runs": 528,
+  "continue_on_error": true,
+  "params": [
+    {
+      "name": "wwr_factor",
+      "lo": 0.8,
+      "hi": 1.2,
+      "kind": "wwr",
+      "target_key": "wwr_factor"
+    },
+    {
+      "name": "gains_scale",
+      "lo": 0.8,
+      "hi": 1.2,
+      "kind": "sa_params",
+      "target_key": "gains_scale"
+    },
+    {
+      "name": "tset_mean_C",
+      "lo": 20.5,
+      "hi": 21.5,
+      "kind": "setpoints",
+      "target_key": "tset_mean_C"
+    },
+    {
+      "name": "tset_spread_K",
+      "lo": 0.5,
+      "hi": 2.0,
+      "kind": "setpoints",
+      "target_key": "tset_spread_K"
+    },
+    {
+      "name": "yoc_shift",
+      "lo": -1.0,
+      "hi": 1.0,
+      "kind": "yoc_shift",
+      "target_key": "yoc_shift"
+    },
+    {
+      "name": "baseACH",
+      "lo": 0.05,
+      "hi": 0.5,
+      "kind": "record_global",
+      "target_key": "baseACH"
+    },
+    {
+      "name": "shadingFactor",
+      "lo": 0.3,
+      "hi": 1.0,
+      "kind": "record_global",
+      "target_key": "shadingFactor"
+    },
+    {
+      "name": "gWin",
+      "lo": 0.45,
+      "hi": 0.75,
+      "kind": "record_global",
+      "target_key": "gWin"
+    },
+    {
+      "name": "UWin",
+      "lo": 0.9,
+      "hi": 2.0,
+      "kind": "record_global",
+      "target_key": "UWin"
+    },
+    {
+      "name": "hConWin",
+      "lo": 2.0,
+      "hi": 4.0,
+      "kind": "record_global",
+      "target_key": "hConWin"
+    }
+  ],
+  "paths": {
+    "AIXLIB_MO": "/home/waiz_kv/mza_sensitivity_analysis/external/AixLib/AixLib/package.mo",
+    "BUILDING_DATA_PKL": "/home/waiz_kv/mza_sensitivity_analysis/data/building_data/building_data_merged.pkl",
+    "BUILDING_DATA_CSV": "/home/waiz_kv/mza_sensitivity_analysis/data/building_data/building_data_merged.csv",
+    "TEASER_BASE": "/home/waiz_kv/mza_sensitivity_analysis/teaser_models/sensitivity_analysis",
+    "OUT_BASE": "/home/waiz_kv/mza_sensitivity_analysis/results/sa_step3_morris",
+    "MOS_FILES": {
+      "TRY_A": "/home/waiz_kv/mza_sensitivity_analysis/data/weather/UnknownStationID_20110101_20111231_Napoli-Capodichino.AP.mos",
+      "TRY_B": "/home/waiz_kv/mza_sensitivity_analysis/data/weather/UnknownStationID_20150101_20151231_Munchen.mos",
+      "TRY_C": "/home/waiz_kv/mza_sensitivity_analysis/data/weather/DEU_B_Berlin_2021.mos"
+    }
+  },
+  "dry_run": false
+}

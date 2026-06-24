@@ -52,7 +52,7 @@ def create_2x3_figure(plan_paths, output_pdf):
         images.append(img)
 
     # 2 rows, 3 columns
-    fig, axes = plt.subplots(2, 3, figsize=(8.27, 4.0))
+    fig, axes = plt.subplots(2, 3, figsize=(6.14, 3.8))
     axes = axes.flatten()
 
     # Turn all axes off first
@@ -81,22 +81,35 @@ def create_2x3_figure(plan_paths, output_pdf):
 
 
 def main():
+    from pathlib import Path
+
+    # If this script is inside:
+    # rd_ground_truth_extraction/figures/
+    PROJECT_DIR = Path(__file__).resolve().parents[1]
+
+    INPUT_DIR = PROJECT_DIR / "data" / "raw_rd"
+    OUTPUT_DIR = PROJECT_DIR / "figures" / "output"
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
     plan_paths = [
-        r"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\Footprints_final\1.pdf",
-        r"C:\Users\thom_sh\Desktop\3.pdf",
-        r"C:\Users\thom_sh\Desktop\4.png",
-        r"C:\Users\thom_sh\Desktop\2.png",
-        r"C:\Users\thom_sh\Desktop\5.png",
-        r"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\Footprints_final\6.pdf",
+        INPUT_DIR / "1.pdf",
+        INPUT_DIR / "3.pdf",
+        INPUT_DIR / "4.pdf",
+        INPUT_DIR / "2.pdf",
+        INPUT_DIR / "5.pdf",
+        INPUT_DIR / "6.pdf",
     ]
 
-    output_pdf = r"C:\WF\Thomas Sharon\Floorplan_Dataset\Real_estate_data\real_estate_floorplan_examples.pdf"
+    output_pdf = OUTPUT_DIR / "real_estate_floorplan_examples.pdf"
 
     for path in plan_paths:
-        if not Path(path).exists():
+        if not path.exists():
             raise FileNotFoundError(f"File not found: {path}")
 
-    create_2x3_figure(plan_paths, output_pdf)
+    create_2x3_figure(
+        plan_paths=[str(path) for path in plan_paths],
+        output_pdf=str(output_pdf),
+    )
 
 
 if __name__ == "__main__":

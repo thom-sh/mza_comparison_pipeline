@@ -2,6 +2,7 @@ import os
 import math
 import pickle
 import matplotlib.pyplot as plt
+from pathlib import Path
 from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.collections import PatchCollection
 from shapely.geometry import Polygon, MultiPolygon
@@ -201,6 +202,21 @@ def plot_single_plan(ax, dwellings, cores, title, pad_ratio):
         spine.set_linewidth(0.7)
         spine.set_edgecolor(LEGEND_BOX_EDGE)
 
+def load_building_ids(ids_file: Path) -> list[int]:
+    ids = []
+
+    with ids_file.open("r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+
+            if not line or line.startswith("#"):
+                continue
+
+            ids.append(int(line))
+
+    return ids
+
+
 
 # ============================================================
 # PATH / ID UTILITIES
@@ -227,7 +243,7 @@ def build_pickle_paths_from_ids(folder, ids, max_ids=200):
 def display_zoning_pickles(
     pickle_paths,
     ncols=9,
-    figure_title="MSD ground truth (panel d)",
+    figure_title=None,
     save_path=None,
     dpi=300,
 ):
@@ -250,7 +266,7 @@ def display_zoning_pickles(
     fig, axes = plt.subplots(
         nrows,
         ncols,
-        figsize=(8.27, 11.69),  # A4 size in inches
+        figsize=(6.14, 10.69),  # A4 size in inches
         dpi=dpi
     )
 
@@ -291,62 +307,30 @@ def display_zoning_pickles(
 # ============================================================
 
 if __name__ == "__main__":
-    pickle_folder = r"C:\WF\Thomas Sharon\Floorplan_Dataset\rd_pickle"
+    
+    # If this script is inside:
+    # rd_ground_truth_extraction/figures/
+    PROJECT_DIR = Path(__file__).resolve().parents[1]
 
-    ids_to_plot = [
-1,
-2,
-3,
-5,
-6,
-7,
-8,
-11,
-15,
-17,
-19,
-20,
-22,
-23,
-24,
-25,
-32,
-33,
-34,
-35,
-37,
-38,
-39,
-41,
-44,
-45,
-46,
-47,
-48,
-49,
-50,
-51,
-52,
-53,
-54,
-55,
-56,
-57,
-58,
-59,
+    pickle_folder = PROJECT_DIR / "data" / "ground_truth"
 
-]
+    IDS_FILE = PROJECT_DIR / "data" / "rd_thesis_building_ids.txt"
+
+    ids_to_plot = load_building_ids(IDS_FILE)
 
     pickle_paths = build_pickle_paths_from_ids(
-        folder=pickle_folder,
+        folder=str(pickle_folder),
         ids=ids_to_plot,
         max_ids=200
     )
 
+    save_path = PROJECT_DIR / "figures" / "output" / "rd_gt_panel.pdf"
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+
     display_zoning_pickles(
         pickle_paths=pickle_paths,
         ncols=5,
-        figure_title="MSD ground truth (panel d)",
-        save_path=r"C:\WF\Thomas Sharon\Master_Thesis_Report\figures\rd_gt_panel.pdf",
+        figure_title="RD ground truth",
+        save_path=str(save_path),
         dpi=300,
     )

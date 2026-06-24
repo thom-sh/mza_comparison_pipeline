@@ -1,4 +1,4 @@
-name: msd-test
+name: mza-validation
 channels:
   - conda-forge
 dependencies:
