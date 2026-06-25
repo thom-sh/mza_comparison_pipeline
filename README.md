@@ -27,7 +27,7 @@ Use this repository to:
 
 The complete geometric validation workflow is shown below. It starts from the reference floor-plan sources, extracts dwelling and stairwell ground-truth polygons, prepares the simplified footprint and CityGML input for the external MZA workflow, and finally compares the MZA-generated zones with the reference ground truth using IoU-based matching, metric calculation, diagnostic classification, and validation figures.
 
-![Validation implementation workflow](report/figures/validation_implementation_workflow.png)
+![Validation implementation workflow](report/figures/validation_implementation_workflow.drawio.png)
 
 *Figure: Implementation workflow for the geometric validation of MZA-generated dwelling and stairwell zones.*
 
