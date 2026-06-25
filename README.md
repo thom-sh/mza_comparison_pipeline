@@ -431,53 +431,33 @@ Add the following helper function in `utils.py`, for example close to the other 
 ```python
 def swiss_typical_apartment_size(building_info: dict) -> float:
     """
-    Swiss deployment function (MSD-calibrated).
+    Swiss deployment function for MSD cases.
 
-    Predicts the typical apartment size [m²] from the ground-floor
-    footprint area A [m²] using a forced piecewise-linear model.
+    Predicts the typical apartment size [m²] from the external footprint area A_fp [m²]
+    using the final four-regime piecewise-linear model from the thesis report.
 
-    Input:
-        building_info:
-            Dictionary containing the ground-floor polygon under:
-            building_info["polygons"]["gf_polygon"]
-
-    Output:
-        y:
-            Predicted typical apartment size [m²]
+    The input area must correspond to the simplified external footprint area,
+    after internal boundaries have been dissolved.
     """
+
     gf_polygon = building_info.get("polygons", {}).get("gf_polygon", None)
 
     if gf_polygon is None:
         raise ValueError("Missing building_info['polygons']['gf_polygon'].")
 
-    A = float(gf_polygon.area)
-    print("[footprint_area]", A)
+    A_fp = float(gf_polygon.area)
+    print("[external_footprint_area_Afp]", A_fp)
 
-    # Breakpoints
-    b1 = 169.38
-    b2 = 188.88
-    b3 = 208.49
-    b4 = 246.69
-    b5 = 350.91
-
-    # Piecewise regression
-    if A <= b1:
-        y = 19.897 + 0.297024 * A
-    elif A <= b2:
-        y = -26.387 + 0.567679 * A
-    elif A <= b3:
-        y = 64.747 + 0.093710 * A
-    elif A <= b4:
-        y = -7.754 + 0.425586 * A
-    elif A <= b5:
-        y = 59.374 + 0.044637 * A
+    if A_fp <= 177.3575:
+        y = 1.2430 + 0.417820 * A_fp
+    elif A_fp <= 209.6500:
+        y = 20.0725 + 0.317681 * A_fp
+    elif A_fp <= 300.9475:
+        y = 123.7882 - 0.160915 * A_fp
     else:
-        y = 52.649 + 0.072966 * A
+        y = 30.0455 + 0.126055 * A_fp
 
-    # Safety clamp for deployment
-    y = max(30.0, min(y, 150.0))
-
-    print("[typical_apt_area_m2]", y)
+    print("[estimated_mean_dwelling_area_m2]", y)
 
     return float(y)
 ```
