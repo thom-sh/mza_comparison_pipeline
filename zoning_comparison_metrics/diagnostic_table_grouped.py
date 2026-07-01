@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-from pathlib import Path
-
 # ===============================================================
 # CONFIG
 # ===============================================================
@@ -56,7 +54,7 @@ THESIS_COLORS = {
     "failed": "#D7ECEA",
     "msd": "#6FA9A6",
     "real_estate": "#D7ECEA",
-    "edge_grey": "#777D84",
+    "edge_grey": "#000000",
     "legend_edge": "#BDC1C5",
     "grid_grey": "#D9D9D9",
     "text_black": "#222222",

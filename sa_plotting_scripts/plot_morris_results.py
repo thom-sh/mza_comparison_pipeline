@@ -83,7 +83,7 @@ COLORS = {
     # General thesis style
     "grid": "#D9D9D9",
     "text": "#000000",
-    "edge": "#777D84",
+    "edge": "#000000",
     "legend_edge": "#BDC1C5",
 }
 

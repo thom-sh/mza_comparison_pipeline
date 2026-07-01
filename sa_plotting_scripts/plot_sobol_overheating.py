@@ -52,15 +52,15 @@ OUTPUT_DIR = PROJECT_DIR / "output" / "figures_sobol_thesis_style"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 OUT_RUNS_WITH_OVERHEATING_CSV = (
-    OUTPUT_DIR / "sobol_runs_collected_with_overheating_hours.csv"
+    SOBOL_ROOT / "sobol_runs_collected_with_overheating_hours.csv"
 )
 
 OUT_INDICES_CSV = (
-    OUTPUT_DIR / "sobol_indices_overheating_hours.csv"
+    SOBOL_ROOT / "sobol_indices_overheating_hours.csv"
 )
 
 OUT_WEATHER_COMPARISON_CSV = (
-    OUTPUT_DIR / "sobol_weather_comparison_ST_overheating_hours.csv"
+    SOBOL_ROOT / "sobol_weather_comparison_ST_overheating_hours.csv"
 )
 
 DPI = 300

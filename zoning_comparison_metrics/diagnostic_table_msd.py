@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 # ===============================================================
 # CONFIG
@@ -88,10 +89,6 @@ def classify_case(row):
 
     return "Moderate geometric match"
 
-import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
-
 
 # ===============================================================
 # THESIS PLOT STYLE
@@ -101,7 +98,7 @@ THESIS_COLORS = {
     "light_blue": "#DCEAF7",
     "mid_blue": "#AFCBE3",
     "core_grey": "#5F666D",
-    "edge_grey": "#777D84",
+    "edge_grey": "#000000",
     "legend_edge": "#BDC1C5",
     "light_grey": "#DBDBDB",
     "dark_grey": "#999999",
