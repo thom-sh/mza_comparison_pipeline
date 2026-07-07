@@ -20,11 +20,9 @@ This script focuses on:
 
 All processing logic is imported from msd_processing.py.
 """
-
+from __future__ import annotations
 from pathlib import Path
 import sys
-
-from __future__ import annotations
 
 import os
 from dataclasses import dataclass
@@ -40,7 +38,7 @@ from shapely.geometry import Polygon
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
 
-from msd_processing import (
+from msd_dataset_creation.msd_processing import (
     load_graph,
     remove_auxiliary_rooms,
     detect_apartments_and_core_nodes,

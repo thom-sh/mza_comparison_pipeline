@@ -343,7 +343,7 @@ def orient_footprint_by_stairs(
     It is not passed to the MZA as an internal thermal zone.
     """
     if not stair_polys:
-        print("⚠️ No stairs/core polygons found — orientation skipped.")
+        print("No stairs/core polygons found; orientation skipped.")
         return footprint
 
     candidates = collect_core_outer_edge_candidates(
@@ -357,14 +357,14 @@ def orient_footprint_by_stairs(
     chosen_info = select_orientation_candidate(candidates)
 
     if chosen_info is None:
-        print("⚠️ Stairs/core polygons found, but no valid outer-side edge was detected — orientation skipped.")
+        print("Stairs/core polygons found, but no valid outer-side edge was detected; orientation skipped.")
         return footprint
 
     chosen_dir = chosen_info["facade_dir"]
 
     print(
-        f"🎯 Selected core edge closest to outer boundary; "
-        f"associated façade direction ~{chosen_dir:.1f}°."
+        f"Selected core edge closest to outer boundary; "
+        f"associated facade direction ~{chosen_dir:.1f} deg."
     )
     print(
         f"   distance to boundary = {chosen_info['distance_to_boundary']:.3f} m, "
@@ -373,7 +373,7 @@ def orient_footprint_by_stairs(
 
     rotation_needed = -chosen_dir
 
-    print(f"🔄 Rotating footprint based on façade direction: {rotation_needed:.2f}°")
+    print(f"Rotating footprint based on facade direction: {rotation_needed:.2f} deg")
 
     rot_fp = rotate(
         footprint,
@@ -396,7 +396,7 @@ def orient_footprint_by_stairs(
     print(f"   footprint centroid y = {footprint_center_y:.2f}")
 
     if core_y > footprint_center_y:
-        print("↻ Core polygon above footprint centre → flipping 180°")
+        print("Core polygon above footprint centre; flipping 180 deg")
 
         rot_fp = rotate(
             rot_fp,
@@ -428,7 +428,7 @@ def extract_footprint(building_id: int, datapath: str) -> Polygon:
     graph_path = os.path.join(datapath, f"{building_id}.pickle")
 
     if not os.path.exists(graph_path):
-        raise FileNotFoundError(f"❌ Missing: {graph_path}")
+        raise FileNotFoundError(f"Missing: {graph_path}")
 
     fp_data = load_floorplan_pickle(graph_path)
 
@@ -468,7 +468,12 @@ def extract_footprint(building_id: int, datapath: str) -> Polygon:
 #                      GEOJSON EXPORT
 # ============================================================
 
-def create_footprint_geojson(building_id: int, datapath: str, output_geojson: str) -> str:
+def create_footprint_geojson(
+    building_id: int,
+    datapath: str,
+    output_geojson: str,
+    show_plot: bool = False,
+) -> str:
     """
     Create an oriented external footprint and save it as GeoJSON.
     """
@@ -491,7 +496,10 @@ def create_footprint_geojson(building_id: int, datapath: str, output_geojson: st
     with open(output_geojson, "w", encoding="utf-8") as f:
         json.dump(geo, f, indent=2)
 
-    print(f"📁 Saved GeoJSON: {output_geojson}")
+    print(f"Saved GeoJSON: {output_geojson}")
+
+    if not show_plot:
+        return output_geojson
 
     try:
         import matplotlib.pyplot as plt
@@ -505,7 +513,7 @@ def create_footprint_geojson(building_id: int, datapath: str, output_geojson: st
         plt.show()
 
     except Exception as e:
-        print("⚠️ Could not plot footprint:", e)
+        print("Could not plot footprint:", e)
 
     return output_geojson
 
@@ -524,4 +532,5 @@ if __name__ == "__main__":
         building_id=BUILDING_ID,
         datapath=DATAPATH,
         output_geojson=OUTPUT_GEOJSON,
+        show_plot=True,
     )

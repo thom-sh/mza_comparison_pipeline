@@ -213,7 +213,7 @@ def replace_building_footprint(input_gml, output_gml, target_id, geojson_fp, sou
     if bldg_el is None:
         raise ValueError(f"Building {target_id} not found")
 
-    print(f"🏗️ Found building: {target_id}")
+    print(f"Found building: {target_id}")
 
     # Extract heights
     groundZ, roofZ, height, srsName = extract_ground_roof_info(bldg_el)
@@ -222,7 +222,7 @@ def replace_building_footprint(input_gml, output_gml, target_id, geojson_fp, sou
 
     old_fp = get_ground_polygon(bldg_el)
     old_centroid = old_fp.centroid
-    print(f"🏁 Original centroid: ({old_centroid.x:.2f}, {old_centroid.y:.2f})")
+    print(f"Original centroid: ({old_centroid.x:.2f}, {old_centroid.y:.2f})")
 
     # Load new footprint
     new_fp = read_footprint_geojson(geojson_fp)
@@ -230,7 +230,7 @@ def replace_building_footprint(input_gml, output_gml, target_id, geojson_fp, sou
         new_fp = new_fp.buffer(0)
 
     # --- FIXED ORIENTATION ---
-    print(f"📐 Using FIXED rotation angle: {FIXED_ANGLE}°")
+    print(f"Using FIXED rotation angle: {FIXED_ANGLE} deg")
 
     # Rotate
     new_fp_rot = shapely_rotate(new_fp, FIXED_ANGLE, origin="centroid", use_radians=False)
@@ -240,14 +240,14 @@ def replace_building_footprint(input_gml, output_gml, target_id, geojson_fp, sou
     dy = old_centroid.y - new_fp_rot.centroid.y
     new_fp_aligned = shapely_translate(new_fp_rot, xoff=dx, yoff=dy)
 
-    print(f"🔄 Translation: dx={dx:.2f}, dy={dy:.2f}")
+    print(f"Translation: dx={dx:.2f}, dy={dy:.2f}")
 
     # Replace geometry
     rebuild_lod2_solid(bldg_el, new_fp_aligned, groundZ, roofZ, srsName)
     rebuild_bounded_by_surfaces(bldg_el, new_fp_aligned, groundZ, roofZ, srsName)
 
-    # Write output (NO pretty_print → fast!)
+    # Write output without pretty_print for faster batch runs.
     tree.write(output_gml, xml_declaration=True, encoding="utf-8")
 
-    print(f"✅ Saved updated GML:\n{output_gml}")
+    print(f"Saved updated GML:\n{output_gml}")
     return output_gml
