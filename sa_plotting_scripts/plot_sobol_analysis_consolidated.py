@@ -133,13 +133,13 @@ KPI_CONFIGS = [
         "kpi": "heat_demand_kWh",
         "filename": "sobol_v3_annual_heating_demand",
         "title": "Annual heating demand",
-        "xlabel": "Sobol sensitivity index [-]",
+        "xlabel": "Sobol sensitivity index",
     },
     {
         "kpi": "peak_heat_kW",
         "filename": "sobol_v3_peak_heating_load",
         "title": "Peak heating load",
-        "xlabel": "Sobol sensitivity index [-]",
+        "xlabel": "Sobol sensitivity index",
     },
 ]
 
@@ -760,7 +760,7 @@ def plot_sobol_st_weather_comparison(
     ax.set_yticklabels(param_order)
     ax.invert_yaxis()
 
-    ax.set_xlabel(r"Sobol total-order index $S_T$ [-]")
+    ax.set_xlabel(r"Sobol total-order index $S_T$")
 
     if FIXED_XMAX is not None:
         ax.set_xlim(0, FIXED_XMAX)

@@ -784,3 +784,21 @@ A common source of errors is mixing old absolute paths, such as local dataset fo
 - Large simulation outputs are not part of the normal geometric-comparison workflow.
 - Most scripts use hard-coded paths or configuration blocks near the top of the file. Check these paths before running the scripts on another machine.
 - The `archive/` folder is kept for traceability and should not be the starting point for normal use.
+
+---
+
+## Use of artificial intelligence
+
+Generative artificial intelligence tools were used as supporting tools during the development and documentation of this repository.
+
+ChatGPT was used to assist with:
+
+- improving code readability and organisation,
+- debugging Python scripts and interpreting error messages,
+- suggesting modifications to file paths and repository-relative directory handling,
+- improving plotting scripts and figure formatting,
+- refining comments, docstrings, README text, and other documentation,
+- supporting language correction and the formulation of technical explanations.
+
+All AI-assisted suggestions were reviewed, adapted, and tested by the author before being included. The author remained responsible for the implementation, validation methodology, interpretation of results, and final repository content. No validation results or scientific conclusions were generated or accepted solely on the basis of AI output.
+

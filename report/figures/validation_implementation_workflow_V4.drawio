@@ -1,0 +1,127 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="sa_logic" name="Sensitivity-analysis logic">
+    <mxGraphModel dx="2416" dy="1298" grid="1" gridSize="14" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="614" pageHeight="374" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="e1" edge="1" parent="1" style="endArrow=block;html=1;rounded=0;strokeColor=#777d84;strokeWidth=1.4;fontSize=24;fontFamily=Times New Roman;fontStyle=1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="734.8510638297871" y="224" as="sourcePoint" />
+            <mxPoint x="859.9574468085107" y="273" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-30" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;Graph-based ground-truth extraction&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;entrance-edge removal and connected components&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="118" width="281.28" x="672" y="82.5" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-31" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;Manual ground-truth extraction&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;digitisation and metric scaling&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120.63" width="280" x="672" y="222.37" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-32" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;font&gt;&lt;b&gt;Common reference ground-truth&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;dwelling and stairwell polygons, labels, adjacency&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="126" width="258" x="1017" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-33" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;b&gt;&lt;font&gt;Simplified footprint generation&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;internal boundaries dissolved&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="107" width="266" x="1316" y="151" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-34" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;CityGML/LoD2 footprint replacement&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;font&gt;and orientation&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="109" width="246" x="1326" y="387.59000000000003" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-35" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;b&gt;&lt;font&gt;German real estate cases&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;available year of construction&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="66" width="267" x="980" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-36" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;font&gt;&lt;b&gt;MSD cases&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;estimated mean dwelling area&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="267" x="980" y="474.19000000000005" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-37" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;b&gt;&lt;font&gt;Existing Multizone Assignment Algorithm&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font&gt;automatic zoning&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="123" width="230" x="1334" y="588" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-38" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;font&gt;&lt;font&gt;&lt;b&gt;MZA-generated&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;b&gt;thermal zones&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;predicted dwelling and stairwell geometries&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="95.75" width="320" x="916" y="603.5" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-39" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;Alignment and IoU-based matching&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;reference and predicted zones&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="92" width="296.5" x="518" y="603.5" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-40" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;Metric calculation&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;zone-level and building-level metrics&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="87" width="294" x="519.25" y="756" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-41" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;Diagnostic classification&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;case-level validation outcome&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="264" x="944" y="756" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-42" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-30" style="endArrow=block;html=1;rounded=0;strokeWidth=2;entryX=0;entryY=0.35;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Times New Roman;fontSize=24;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="qMFFb6dmAJILSPGKrTeK-32">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="945.5" y="209.95238095238096" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-43" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-31" style="endArrow=block;html=1;rounded=0;strokeWidth=2;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-32">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="908" y="249" as="sourcePoint" />
+            <mxPoint x="1105.5" y="239" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-44" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-32" style="endArrow=block;html=1;rounded=0;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-33">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1188" y="229" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-45" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-33" style="endArrow=block;html=1;rounded=0;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-46" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-35" style="endArrow=block;html=1;rounded=0;strokeWidth=2;entryX=-0.004;entryY=0.374;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-34">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1184" y="363.5094214876034" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-47" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-36" style="endArrow=block;html=1;rounded=0;strokeWidth=2;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-34">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1184" y="403.6747107438017" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-48" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-34" style="endArrow=block;html=1;rounded=0;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-37">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1355" y="489" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-49" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-37" style="endArrow=block;html=1;rounded=0;strokeWidth=2;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-38">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1150.5" y="578.5" as="sourcePoint" />
+            <mxPoint x="1159" y="630.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-50" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-38" style="endArrow=block;html=1;rounded=0;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-51" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-39" style="endArrow=block;html=1;rounded=0;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-40">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-52" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-40" style="endArrow=block;html=1;rounded=0;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-53" parent="1" style="rounded=1;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;whiteSpace=wrap;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;Modified Swiss Dwellings data&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;room polygons and connectivity&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="81" width="317" x="322" y="101" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-54" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-53" style="endArrow=block;html=1;rounded=0;strokeWidth=2;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-30">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="685.5" y="209" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-55" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Times New Roman;fontSize=24;" value="&lt;div&gt;&lt;b&gt;&lt;font&gt;German real estate floor plans&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;PDF/image documents&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="81" width="317" x="322" y="242.19" as="geometry" />
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-56" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-55" style="endArrow=block;html=1;rounded=0;strokeWidth=2;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-31">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="665.5" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qMFFb6dmAJILSPGKrTeK-57" edge="1" parent="1" source="qMFFb6dmAJILSPGKrTeK-32" style="endArrow=classic;html=1;rounded=0;dashed=1;strokeWidth=2;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Times New Roman;fontSize=24;" target="qMFFb6dmAJILSPGKrTeK-39" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="896" y="399" />
+              <mxPoint x="666" y="399" />
+            </Array>
+            <mxPoint x="788" y="278.9950000000001" as="sourcePoint" />
+            <mxPoint x="790.175" y="531.0239999999999" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

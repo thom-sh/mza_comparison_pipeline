@@ -1,0 +1,43 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="sensitivity-workflow" name="Sensitivity analysis workflow">
+    <mxGraphModel dx="1144" dy="586" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontFamily=Times New Roman;fontSize=14;fontColor=#000000;align=center;verticalAlign=middle;spacing=6;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Determine variations or probability distributions&lt;br&gt;of input factors&lt;/font&gt;" vertex="1">
+          <mxGeometry height="58" width="340" x="240" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontFamily=Times New Roman;fontSize=14;fontColor=#000000;align=center;verticalAlign=middle;spacing=6;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Create building energy models&lt;br&gt;based on input variations&lt;/font&gt;" vertex="1">
+          <mxGeometry height="58" width="300" x="260" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontFamily=Times New Roman;fontSize=14;fontColor=#000000;align=center;verticalAlign=middle;spacing=6;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Run energy models&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="260" x="280" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontFamily=Times New Roman;fontSize=14;fontColor=#000000;align=center;verticalAlign=middle;spacing=6;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Collect simulation results&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="220" x="300" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontFamily=Times New Roman;fontSize=14;fontColor=#000000;align=center;verticalAlign=middle;spacing=6;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Run sensitivity analysis&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="160" x="330" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontFamily=Times New Roman;fontSize=14;fontColor=#000000;align=center;verticalAlign=middle;spacing=6;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Present sensitivity analysis results&lt;/font&gt;" vertex="1">
+          <mxGeometry height="54" width="200" x="310" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="8" edge="1" parent="1" source="2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;endArrow=block;endFill=1;endSize=8;fontFamily=Times New Roman;" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9" edge="1" parent="1" source="3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;endArrow=block;endFill=1;endSize=8;fontFamily=Times New Roman;" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="10" edge="1" parent="1" source="4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;endArrow=block;endFill=1;endSize=8;fontFamily=Times New Roman;" target="5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="11" edge="1" parent="1" source="5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;endArrow=block;endFill=1;endSize=8;fontFamily=Times New Roman;" target="6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="12" edge="1" parent="1" source="6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;endArrow=block;endFill=1;endSize=8;fontFamily=Times New Roman;" target="7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

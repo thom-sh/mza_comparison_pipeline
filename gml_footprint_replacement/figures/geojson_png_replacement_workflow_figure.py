@@ -75,7 +75,7 @@ def set_equal_xy(ax, coords: np.ndarray, margin_ratio: float = 0.10):
     ax.set_ylim(miny - margin, maxy + margin)
     ax.set_aspect("equal", adjustable="box")
 
-def add_panel_label_below(ax, text, y_offset=-0.23):
+def add_panel_label_below(ax, text, y_offset=-0.28):
     ax.text(
         0.5,
         y_offset,
@@ -84,6 +84,7 @@ def add_panel_label_below(ax, text, y_offset=-0.23):
         ha="center",
         va="top",
         fontsize=10,
+        fontweight="bold",
     )
 
 def plot_geojson_panel(ax, polygon_xy: np.ndarray):
@@ -133,7 +134,7 @@ def plot_png_panel(ax, png_path: str):
     ax.imshow(img, aspect="equal")
     ax.axis("on")
 
-    add_panel_label_below(ax, "(b)", y_offset=-0.23)
+    add_panel_label_below(ax, "(b)", y_offset=-0.28)
 
 
 def create_two_panel_figure(
@@ -147,8 +148,12 @@ def create_two_panel_figure(
     """
     polygon_xy = load_geojson_polygon(geojson_path)
 
-    plt.rcParams["font.family"] = "serif"
+    plt.rcParams["font.family"] = "cmr10"
+    plt.rcParams["mathtext.fontset"] = "cm"
     plt.rcParams["font.size"] = 11
+    plt.rcParams["xtick.labelsize"] = 9
+    plt.rcParams["ytick.labelsize"] = 9
+    plt.rcParams["axes.unicode_minus"] = False
 
     fig, axes = plt.subplots(
         1,
@@ -203,7 +208,7 @@ def main():
 
     GEOJSON_PATH = PROJECT_DIR / "data" / DATASET / "footprint" / f"footprint_{BUILDING_ID}.geojson"
 
-    PNG_PATH = PROJECT_DIR / "figures" / "input" / f"citygml_{BUILDING_ID}.png"
+    PNG_PATH = PROJECT_DIR / "figures" / "data" / f"citygml_{BUILDING_ID}.png"
 
     OUTPUT_PATH = PROJECT_DIR / "figures" / "output" / f"citygml_replacement_workflow_{BUILDING_ID}.pdf"
 

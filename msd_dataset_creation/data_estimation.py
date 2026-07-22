@@ -30,9 +30,9 @@ GREY_VERY_LIGHT = "#DBDBDB"
 GRID_COLOR = "#E6E8EA"
 
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.serif": ["Times New Roman", "STIX Two Text", "STIXGeneral", "DejaVu Serif"],
-    "mathtext.fontset": "stix",
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
+    "axes.unicode_minus": False,
 
     "font.size": 10,
     "axes.titlesize": 10,
@@ -199,11 +199,11 @@ def plot_model_comparison(results_df, output_dir):
         df_plot["MAE_m2"],
         width=0.62,
         color=colors,
-        edgecolor=POLYGON_EDGE_COLOR,
+        edgecolor="black",
         linewidth=0.7,
     )
 
-    ax.set_ylabel("MAE [m²]")
+    ax.set_ylabel(r"MAE in $\mathrm{m}^2$")
     ax.set_xlabel("Candidate model")
     # ax.set_title("Model comparison for dwelling-area estimation")
     ax.set_xticks(range(len(df_plot)))
@@ -287,8 +287,12 @@ def plot_final_fit(g, final_model_name, final_model_object, final_breaks, output
             label="Final constant baseline",
         )
 
-    ax.set_xlabel(r"External footprint area $A_\mathrm{fp}$ [m²]")
-    ax.set_ylabel(r"Mean apartment area $A_\mathrm{apt}$ [m²]")
+    ax.set_xlabel(
+        r"External building footprint area $A_{\mathrm{fp}}$ in $\mathrm{m}^2$"
+    )
+    ax.set_ylabel(
+        r"Mean dwelling area $A_{\mathrm{dw}}$ in $\mathrm{m}^2$"
+    )
     # ax.set_title("Final dwelling-area estimation model")
     ax.grid(alpha=0.25, linewidth=0.6)
     ax.set_axisbelow(True)
@@ -334,8 +338,8 @@ def plot_predicted_vs_observed(test_best, output_dir):
         label="Perfect prediction",
     )
 
-    ax.set_xlabel("Observed mean apartment area [m²]")
-    ax.set_ylabel("Predicted mean apartment area [m²]")
+    ax.set_xlabel(r"Observed mean dwelling area in $\mathrm{m}^2$")
+    ax.set_ylabel(r"Predicted mean dwelling area in $\mathrm{m}^2$")
     # ax.set_title("Predicted vs observed values")
     ax.grid(alpha=0.25, linewidth=0.6)
     ax.set_axisbelow(True)
@@ -374,8 +378,8 @@ def plot_residual_vs_footprint(test_best, output_dir):
         label="Zero residual",
     )
 
-    ax.set_xlabel(r"External footprint area $A_\mathrm{fp}$ [m²]")
-    ax.set_ylabel("Residual [m²]")
+    ax.set_xlabel(r"External footprint area $A_\mathrm{fp}$ in m²")
+    ax.set_ylabel(r"Residual in $\mathrm{m}^2$")
     # ax.set_title("Residuals across footprint area")
     ax.grid(alpha=0.25, linewidth=0.6)
     ax.set_axisbelow(True)
@@ -388,7 +392,6 @@ def plot_residual_vs_footprint(test_best, output_dir):
     plt.show()
     plt.close(fig)
 
-
 # ============================================================
 # MAIN SCRIPT
 # ============================================================
@@ -397,9 +400,22 @@ def main():
     # ------------------------------------------------------------
     # USER SETTINGS
     # ------------------------------------------------------------
-    input_csv = Path(r"C:\WF\Thomas Sharon\Floorplan_Dataset\msd_dataset_creation\new_method\model_comparison_results_outcome\msd_area_estimation_400_train_test_geometry_topology_matched_no_validation_overlap.csv")
+    PROJECT_DIR = Path(__file__).resolve().parent
 
-    output_dir = Path(r"C:\WF\Thomas Sharon\Floorplan_Dataset\msd_dataset_creation\new_method\model_comparison_results_outcome")
+    REPO_DIR = PROJECT_DIR.parent
+
+    # Input CSV stored inside this project folder
+    input_csv = (
+        PROJECT_DIR
+        / "data"
+        / "msd_area_estimation_400_train_test.csv"
+    )
+
+    # All generated CSV, TXT and PDF files
+    output_dir = (
+        PROJECT_DIR
+        / "output"
+    )
 
     target_type = "mean"      # "mean" is recommended because MZA uses this for dwelling-count estimation
     test_size = 0.30          # 70% train, 30% test

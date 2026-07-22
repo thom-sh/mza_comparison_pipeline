@@ -214,7 +214,7 @@ def plot_grouped_percentage_bars(msd_df, real_estate_df, out_dir=None):
         x + width / 2,
         data_percent["Real Estate"].values,
         width=width,
-        label="Real Estate",
+        label="German real estate",
         color=THESIS_COLORS["real_estate"],
         edgecolor=THESIS_COLORS["edge_grey"],
         linewidth=0.7,
@@ -231,7 +231,7 @@ def plot_grouped_percentage_bars(msd_df, real_estate_df, out_dir=None):
                 ax.text(
                     bar.get_x() + bar.get_width() / 2,
                     value + 1.2,
-                    f"{value:.1f}%",
+                    f"{value:.1f} %",
                     ha="center",
                     va="bottom",
                     fontsize=9,
@@ -241,7 +241,7 @@ def plot_grouped_percentage_bars(msd_df, real_estate_df, out_dir=None):
     # -----------------------------------------------------------
     # Axes formatting
     # -----------------------------------------------------------
-    ax.set_ylabel("Validation case share [%]")
+    ax.set_ylabel("Share of validation cases in %")
     ax.set_xticks(x)
     ax.set_xticklabels(x_labels)
     

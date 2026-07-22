@@ -1,0 +1,30 @@
+MSD dwelling-area estimation model selection
+===========================================
+
+Input CSV: D:\Sharon\MZA_Thesis\msd_dataset_creation\data\msd_area_estimation_400_train_test.csv
+Buildings after cleaning: 400
+Training buildings: 280
+Test buildings: 120
+Target type: mean
+Test size: 0.3
+Random state: 42
+
+Selected model:
+Piecewise linear K4
+
+Model comparison results:
+                   model   MAE_m2   RMSE_m2   Bias_m2        R2
+     Piecewise linear K4 7.018421 10.834343 -1.054231  0.265647
+     Piecewise linear K3 7.257170 10.969186 -2.088935  0.247254
+     Piecewise linear K5 7.428310 10.999262 -1.426296  0.243121
+     Piecewise linear K6 7.454364 10.970300 -1.889701  0.247101
+     Piecewise linear K2 7.941653 11.486847 -1.258892  0.174530
+Simple linear regression 9.310088 12.043069 -1.030372  0.092652
+  Constant training mean 9.917849 12.700928 -1.211633 -0.009184
+
+Final refit model parameters:
+     selected_model target_type  regime  lower_bound_A_fp  upper_bound_A_fp  alpha_intercept  beta_slope                            equation
+Piecewise linear K4        mean       1              -inf          177.3575         1.242956    0.417820    y_hat = 1.2430 + 0.417820 * A_fp
+Piecewise linear K4        mean       2          177.3575          209.6500        20.072505    0.317681   y_hat = 20.0725 + 0.317681 * A_fp
+Piecewise linear K4        mean       3          209.6500          300.9475       123.788165   -0.160915 y_hat = 123.7882 + -0.160915 * A_fp
+Piecewise linear K4        mean       4          300.9475               inf        30.045476    0.126055   y_hat = 30.0455 + 0.126055 * A_fp

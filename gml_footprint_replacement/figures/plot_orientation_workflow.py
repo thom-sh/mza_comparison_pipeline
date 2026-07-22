@@ -54,13 +54,13 @@ TEXT_COLOR = "#222222"
 def apply_thesis_style() -> None:
     """Apply the thesis-wide Matplotlib styling used for publication figures."""
     plt.rcParams.update({
-        "font.family": "serif",
-        "font.serif": ["Times New Roman", "STIX Two Text", "STIXGeneral", "DejaVu Serif"],
-        "mathtext.fontset": "stix",
+        "font.family": "cmr10",
+        "mathtext.fontset": "cm",
+        "axes.unicode_minus": False,
 
-        "font.size": 10,
-        "axes.titlesize": 10,
-        "axes.labelsize": 10,
+        "font.size": 9,
+        "axes.titlesize": 9,
+        "axes.labelsize": 9,
         "xtick.labelsize": 10,
         "ytick.labelsize": 10,
         "legend.fontsize": 9,
@@ -674,8 +674,8 @@ def add_panel_labels_aligned(fig, axes):
 
     positions = [ax.get_position() for ax in axes]
 
-    top_row_y = min(positions[0].y0, positions[1].y0) - 0.055
-    bottom_row_y = min(positions[2].y0, positions[3].y0) - 0.045
+    top_row_y = min(positions[0].y0, positions[1].y0) - 0.065
+    bottom_row_y = min(positions[2].y0, positions[3].y0) - 0.065
 
     labels = ["(a)", "(b)", "(c)", "(d)"]
     y_positions = [top_row_y, top_row_y, bottom_row_y, bottom_row_y]
@@ -691,6 +691,7 @@ def add_panel_labels_aligned(fig, axes):
             ha="center",
             va="top",
             fontsize=10,
+            fontweight="bold",
             color=TEXT_COLOR,
         )
 
@@ -698,7 +699,7 @@ def add_midpoint(ax, point_xy, label: Optional[str] = None):
     ax.scatter(
         [point_xy[0]],
         [point_xy[1]],
-        s=34,
+        s=20,
         marker="o",
         facecolor="white",
         edgecolor=CORE_COLOR,
@@ -719,9 +720,10 @@ def add_midpoint(ax, point_xy, label: Optional[str] = None):
         )
 
 
-def thesis_legend(ax, loc: str = "best"):
+def thesis_legend(ax, loc: str = "best", bbox_to_anchor=None,):
     legend = ax.legend(
         loc=loc,
+        bbox_to_anchor=bbox_to_anchor,
         frameon=True,
         fancybox=False,
         framealpha=1.0,
@@ -821,7 +823,7 @@ def add_panel_label_below(ax, label: str):
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=9,
         color=TEXT_COLOR,
         clip_on=False,
     )
@@ -845,7 +847,7 @@ def set_common_limits(axes, polygons: List[Polygon], margin_ratio=0.08):
 def create_orientation_figure(result: OrientationResult, output_path: str, title_prefix: str = ""):
     apply_thesis_style()
 
-    fig, axes = plt.subplots(2, 2, figsize=(6.14, 5.5))
+    fig, axes = plt.subplots(2, 2, figsize=(6.14, 4))
     axes = axes.ravel()
 
     # -------------------- (a) Stored GT polygons --------------------
@@ -873,7 +875,11 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
         plot_polygon(ax, poly, linewidth=1.1, color=CORE_EDGE_COLOR, zorder=4)
 
     ax.set_title("")
-    thesis_legend(ax)
+    thesis_legend(
+        ax,
+        loc="upper right",
+        bbox_to_anchor=(1.7, 1.1),
+    )
     set_axis_format(ax)
     # add_panel_label_below(ax, "(a)")
 
@@ -950,7 +956,7 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
     ax.scatter(
         [centroid[0]],
         [centroid[1]],
-        s=28,
+        s=25,
         marker="x",
         color=CORE_COLOR,
         linewidth=0.8,
@@ -974,7 +980,11 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
     # described in the figure caption or methodology text.
 
     ax.set_title("")
-    thesis_legend(ax, loc="upper left")
+    thesis_legend(
+        ax,
+        loc="upper left",
+        bbox_to_anchor=(0.0, 1.02),
+    )
     set_axis_format(ax)
     # add_panel_label_below(ax, "(c)")
 
@@ -1017,7 +1027,12 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
     # described in the figure caption or methodology text.
 
     ax.set_title("")
-    thesis_legend(ax, loc="upper right")
+    thesis_legend(
+        ax,
+        loc="upper left",
+        bbox_to_anchor=(0.3, 1.02
+        ),
+    )
     set_axis_format(ax)
     # add_panel_label_below(ax, "(d)")
 
@@ -1034,10 +1049,30 @@ def create_orientation_figure(result: OrientationResult, output_path: str, title
     axes[3].set_ylim(miny - margin, maxy + margin)
 
     if title_prefix:
-        fig.suptitle(title_prefix, fontsize=10, fontweight="normal", y=0.995)
-        fig.tight_layout(rect=[0, 0.02, 1, 0.97], pad=0.8, w_pad=1.0, h_pad=2.0)
+        fig.suptitle(
+            title_prefix,
+            fontsize=10,
+            fontweight="normal",
+            y=0.98,
+        )
+
+        fig.subplots_adjust(
+            left=0.13,
+            right=0.87,
+            bottom=0.12,
+            top=0.90,
+            wspace=0.40,
+            hspace=0.48,
+        )
     else:
-        fig.tight_layout(pad=0.8, w_pad=1.0, h_pad=2.0)
+        fig.subplots_adjust(
+            left=0.13,
+            right=0.87,
+            bottom=0.12,
+            top=0.95,
+            wspace=0.2,
+            hspace=0.35,
+        )
 
         add_panel_labels_aligned(fig, axes)
 

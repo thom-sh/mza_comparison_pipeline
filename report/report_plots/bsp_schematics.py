@@ -23,10 +23,17 @@ from matplotlib.patches import Polygon as MplPolygon
 # =========================
 # CONFIGURATION
 # =========================
-OUTPUT_DIR = r"C:\WF\Thomas Sharon\Master_Thesis_Report\figures"
+# Edit these paths for your local machine.
+PROJECT_DIR = Path(__file__).resolve().parent
+
+# Repository root:
+# .../mza_sensitivity_analysis
+REPO_DIR = PROJECT_DIR.parent
+
+OUTPUT_DIR = REPO_DIR / "figures"
 OUTPUT_NAME = "bsp_partitioning_updated_logic_horizontal_B_vertical_D.pdf"
 
-FIGSIZE = (7.2, 2.4)
+FIGSIZE = (6.14, 3.8)
 DPI = 300
 SHOW_AFTER_SAVE = True
 
@@ -55,15 +62,15 @@ PLAN_SCALE = 0.5
 # =========================
 LEGEND_EDGE_COLOR = "#bdc1c5"
 
-POLYGON_EDGE_COLOR = "#777d84"
-CORE_EDGE_COLOR = "#777d84"
-LEAF_EDGE_COLOR = "#bdc1c5"
+POLYGON_EDGE_COLOR = "#000000"
+CORE_EDGE_COLOR = "#000000"
+LEAF_EDGE_COLOR = "#777d84"
 
 TREE_EDGE_COLOR = "#777d84"
 TREE_FILL_COLOR = "white"
 
 DWELLING_COLOR = "#F0F0F0"
-CORE_COLOR = "#BFC3C7"
+CORE_COLOR = "#606366"
 CORE_ALPHA = 0.55
 
 
@@ -71,21 +78,16 @@ CORE_ALPHA = 0.55
 # MATPLOTLIB STYLE
 # =========================
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.serif": [
-        "Times New Roman",
-        "STIX Two Text",
-        "STIXGeneral",
-        "DejaVu Serif",
-    ],
-    "mathtext.fontset": "stix",
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
+    "font.weight": "normal",
 
-    "font.size": 8,
-    "axes.titlesize": 9,
-    "axes.labelsize": 8,
-    "xtick.labelsize": 8,
-    "ytick.labelsize": 8,
-    "legend.fontsize": 7,
+    "font.size": 12,
+    "axes.titlesize": 12,
+    "axes.labelsize": 12,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 12,
 
     "axes.titleweight": "normal",
     "axes.labelweight": "normal",
@@ -114,7 +116,7 @@ def add_panel_label(ax, label, y=-0.08):
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontsize=8,
+        fontsize=12,
     )
 
 
@@ -124,7 +126,7 @@ def add_panel_label(ax, label, y=-0.08):
 def draw_tree_node(ax, x, y, label):
     circle = Circle(
         (x, y),
-        0.14,
+        0.22,
         facecolor=TREE_FILL_COLOR,
         edgecolor=TREE_EDGE_COLOR,
         linewidth=0.85,
@@ -137,7 +139,7 @@ def draw_tree_node(ax, x, y, label):
         label,
         ha="center",
         va="center",
-        fontsize=7.5,
+        fontsize=12,
         zorder=6,
     )
 
@@ -149,9 +151,9 @@ def draw_node_role_label(ax, x, y, text, ha="left"):
         text,
         ha=ha,
         va="center",
-        fontsize=6,
+        fontsize=11,
         fontstyle="italic",
-        color="#4c5055",
+        color="#000000",
         zorder=7,
     )
 
@@ -173,11 +175,11 @@ def draw_small_tree(ax, cx, y0, stage):
 
     if stage == 1:
         draw_tree_node(ax, *A, "A")
-        draw_node_role_label(ax, A[0] + 0.22, A[1] + 0.02, "Root\nnode")
+        draw_node_role_label(ax, A[0] + -0.32, A[1] + 0.02, "Root\nnode", ha="right")
         return
 
-    B = (cx - 0.42, y0 + 0.34)
-    C = (cx + 0.42, y0 + 0.34)
+    B = (cx - 0.52, y0 + 0.24)
+    C = (cx + 0.52, y0 + 0.24)
 
     draw_tree_edge(ax, A, B)
     draw_tree_edge(ax, A, C)
@@ -187,13 +189,13 @@ def draw_small_tree(ax, cx, y0, stage):
     draw_tree_node(ax, *C, "C")
 
     if stage == 2:
-        draw_node_role_label(ax, A[0] + 0.22, A[1] + 0.02, "Parent\nnode")
-        draw_node_role_label(ax, B[0] - 0.18, B[1] - 0.28, "Child\nnode", ha="right")
-        draw_node_role_label(ax, C[0] + 0.18, C[1] - 0.28, "Child\nnode")
+        draw_node_role_label(ax, A[0] + 0.32, A[1] + 0.08, "Parent\nnode")
+        draw_node_role_label(ax, B[0] - 0.28, B[1] - 0.28, "Child\nnode", ha="right")
+        # draw_node_role_label(ax, C[0] + 0.24, C[1] - 0.28, "Child\nnode")
         return
 
-    D = (cx - 0.62, y0 - 0.04)
-    E = (cx - 0.22, y0 - 0.04)
+    D = (cx - 1.05, y0 - 0.18)
+    E = (cx + 0.05, y0 - 0.18)
 
     draw_tree_edge(ax, B, D)
     draw_tree_edge(ax, B, E)
@@ -204,8 +206,8 @@ def draw_small_tree(ax, cx, y0, stage):
     if stage == 3:
         return
 
-    F = (cx - 0.78, y0 - 0.42)
-    G = (cx - 0.46, y0 - 0.42)
+    F = (cx - 1.55, y0 - 0.72)
+    G = (cx - 0.55, y0 - 0.72)
 
     draw_tree_edge(ax, D, F)
     draw_tree_edge(ax, D, G)
@@ -214,9 +216,9 @@ def draw_small_tree(ax, cx, y0, stage):
     draw_tree_node(ax, *G, "G")
 
     if stage == 4:
-        draw_node_role_label(ax, C[0] + 0.20, C[1], "Leaf\nnode")
-        draw_node_role_label(ax, F[0] - 0.18, F[1], "Leaf\nnode", ha="right")
-        draw_node_role_label(ax, G[0] + 0.20, G[1], "Leaf\nnode")
+        draw_node_role_label(ax, C[0] + 0.30, C[1], "Leaf\nnode")
+        # draw_node_role_label(ax, F[0] - 0.30, F[1], "Leaf\nnode", ha="right")
+        draw_node_role_label(ax, G[0] + 0.30, G[1] - 0.1, "Leaf\nnode")
 
 
 
@@ -296,7 +298,7 @@ def draw_bsp_stage(ax, x0, y0, scale, stage):
     label_kwargs = dict(
         ha="center",
         va="center",
-        fontsize=8,
+        fontsize=12,
         fontweight="bold",
         zorder=3,
     )
@@ -322,7 +324,7 @@ def draw_bsp_stage(ax, x0, y0, scale, stage):
 
 def draw_bsp_process(ax):
     ax.set_xlim(0, 10.0)
-    ax.set_ylim(0, 3.45)
+    ax.set_ylim(-0.5, 3.45)
     ax.axis("off")
     ax.set_aspect("equal", adjustable="box")
 
@@ -351,23 +353,23 @@ def draw_bsp_process(ax):
 
     # Direction arrow
     arrow = FancyArrowPatch(
-        (0.20, 0.08),
-        (9.55, 0.08),
+        (0.20, -0.30),
+        (9.55, -0.30),
         arrowstyle="-|>",
         mutation_scale=9,
         linewidth=0.9,
-        color=TREE_EDGE_COLOR,
+        color=CORE_EDGE_COLOR,
     )
     ax.add_patch(arrow)
 
     ax.text(
         0.20,
-        0.24,
-        "Partitioning process",
+        -0.2,
+        "Recursive subdivision",
         ha="left",
         va="bottom",
-        fontsize=8,
-        fontstyle="italic",
+        fontsize=12,
+        fontstyle="normal",
     )
 
 
@@ -558,11 +560,11 @@ def main():
     )
 
     draw_bsp_process(axes[0])
-    axes[0].set_title("BSP partitioning process", pad=3)
+    axes[0].set_title("BSP process", pad=3)
     # add_panel_label(axes[0], "(a)", y=-0.03)
 
     draw_simple_plan(axes[1])
-    axes[1].set_title("Leaf based apartment layout", pad=3)
+    axes[1].set_title("Leaf-based dwelling layout", pad=3)
     # add_panel_label(axes[1], "(b)", y=-0.34)
 
     plt.subplots_adjust(

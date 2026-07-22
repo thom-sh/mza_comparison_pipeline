@@ -12,11 +12,13 @@ from shapely.ops import unary_union
 # ============================================================
 # THESIS STYLE
 # ============================================================
-
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 8,
-    "axes.titlesize": 8,
+    "font.family": "cmr10",
+    "font.weight": "normal",
+    "mathtext.fontset": "cm",
+    "font.weight": "normal",
+    "font.size": 9,
+    "axes.titlesize": 9,
     "figure.facecolor": "white",
     "axes.facecolor": "white",
     "savefig.facecolor": "white",
@@ -195,7 +197,7 @@ def plot_single_plan(ax, dwellings, cores, title, pad_ratio):
     ax.set_aspect("equal")
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_title(str(title), pad=0.2, fontsize = 5.8)
+    ax.set_title(str(title), pad=0.2, fontsize = 9)
 
     for spine in ax.spines.values():
         spine.set_visible(True)
@@ -225,14 +227,31 @@ def build_pickle_paths_from_ids(folder, ids, max_ids=200):
 # MAIN GRID DISPLAY
 # ============================================================
 
-def display_zoning_pickles(
+# ============================================================
+# SPLIT GRID DISPLAY
+# ============================================================
+
+def display_zoning_pickles_split(
     pickle_paths,
-    ncols=9,
-    figure_title="MSD ground truth (panel d)",
-    save_path=None,
+    output_dir,
+    base_filename="msd_gt",
+    plans_per_figure=100,
+    ncols=10,
+    figure_size=(6.4, 8.2),
     dpi=300,
+    show=False,
 ):
+    """
+    Plot the zoning pickles in separate thesis-sized figures.
+
+    Default output:
+        msd_gt_part_1.pdf -> plans 1–100
+        msd_gt_part_2.pdf -> plans 101–200
+    """
+
     parsed = []
+
+    # Parse all files only once
     for path in pickle_paths:
         try:
             building_id, dwellings, cores = parse_floorplan_pickle(path)
@@ -243,48 +262,89 @@ def display_zoning_pickles(
     if not parsed:
         raise ValueError("No valid pickle files found.")
 
-    n = len(parsed)
-    nrows = math.ceil(n / ncols)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-#    global_w, global_h = compute_global_window(parsed, pad_ratio=0.01)
+    # Split into groups of 100
+    figure_groups = [
+        parsed[start:start + plans_per_figure]
+        for start in range(0, len(parsed), plans_per_figure)
+    ]
 
-    fig, axes = plt.subplots(
-        nrows,
-        ncols,
-        figsize=(8.27, 11.69),  # A4 size in inches
-        dpi=dpi
-    )
+    saved_paths = []
 
-    fig.subplots_adjust(
-    left=0.01,
-    right=0.99,
-    top=0.985,
-    bottom=0.01,
-    wspace=0.001,
-    hspace=0.19
-)
+    for figure_number, figure_data in enumerate(figure_groups, start=1):
 
-    if nrows == 1 and ncols == 1:
-        axes = [axes]
-    elif nrows == 1 or ncols == 1:
-        axes = list(axes)
-    else:
+        n_plans = len(figure_data)
+        nrows = math.ceil(n_plans / ncols)
+
+        fig, axes = plt.subplots(
+            nrows=nrows,
+            ncols=ncols,
+            figsize=figure_size,
+            dpi=dpi,
+            squeeze=False,
+        )
+
         axes = axes.flatten()
 
-    for ax, (building_id, dwellings, cores) in zip(axes, parsed):
-        plot_single_plan(ax, dwellings, cores, building_id, pad_ratio=0.04)
+        # Small margins suitable for a thesis-page figure
+        fig.subplots_adjust(
+            left=0.005,
+            right=0.995,
+            top=0.975,
+            bottom=0.005,
+            wspace=0.015,
+            hspace=0.19,
+        )
 
-    for ax in axes[len(parsed):]:
-        ax.axis("off")
+        for ax, (building_id, dwellings, cores) in zip(
+            axes,
+            figure_data,
+        ):
+            plot_single_plan(
+                ax=ax,
+                dwellings=dwellings,
+                cores=cores,
+                title=building_id,
+                pad_ratio=0.04,
+            )
 
-    # fig.suptitle(figure_title, fontsize=16, y=0.995)
-    # plt.tight_layout(rect=[0, 0, 1, 0.988])
+        # Hide unused panels, if fewer than 100 plans are present
+        for ax in axes[n_plans:]:
+            ax.set_visible(False)
 
-    if save_path is not None:
-        fig.savefig(save_path, dpi=dpi, bbox_inches="tight", pad_inches=0.01)
-        print(f"Saved figure to: {save_path}")
+        start_number = (figure_number - 1) * plans_per_figure + 1
+        end_number = start_number + n_plans - 1
 
-    plt.show()
+        output_path = (
+            output_dir
+            / f"{base_filename}_part_{figure_number}_{start_number}-{end_number}.pdf"
+        )
+
+        # Do not use bbox_inches="tight":
+        # it can change the intended physical figure dimensions.
+        fig.savefig(
+            output_path,
+            dpi=dpi,
+            bbox_inches=None,
+            pad_inches=0,
+        )
+
+        saved_paths.append(output_path)
+
+        print(
+            f"Saved figure {figure_number}: "
+            f"plans {start_number}–{end_number}\n"
+            f"{output_path}"
+        )
+
+        if show:
+            plt.show()
+
+        plt.close(fig)
+
+    return saved_paths
 
 def load_building_ids(ids_file: Path) -> list[int]:
     ids = []
@@ -301,31 +361,31 @@ def load_building_ids(ids_file: Path) -> list[int]:
     return ids
 
 if __name__ == "__main__":
-    from pathlib import Path
 
-    # If this script is inside:
+    # Script location:
     # msd_ground_truth_extraction/figures/scripts/
     PROJECT_DIR = Path(__file__).resolve().parents[1]
 
     pickle_folder = PROJECT_DIR / "data" / "ground_truth"
+    ids_file = PROJECT_DIR / "data" / "msd_thesis_building_ids.txt"
 
-    IDS_FILE = PROJECT_DIR / "data" / "msd_thesis_building_ids.txt"
-
-    ids_to_plot = load_building_ids(IDS_FILE)
+    ids_to_plot = load_building_ids(ids_file)
 
     pickle_paths = build_pickle_paths_from_ids(
         folder=str(pickle_folder),
         ids=ids_to_plot,
-        max_ids=200
+        max_ids=200,
     )
 
-    save_path = PROJECT_DIR / "figures" / "output" / "msd_gt_panel.pdf"
-    save_path.parent.mkdir(parents=True, exist_ok=True)
+    output_dir = PROJECT_DIR / "figures" / "output"
 
-    display_zoning_pickles(
+    display_zoning_pickles_split(
         pickle_paths=pickle_paths,
-        ncols=12,
-        figure_title="MSD ground truth (panel d)",
-        save_path=str(save_path),
+        output_dir=output_dir,
+        base_filename="msd_gt",
+        plans_per_figure=100,
+        ncols=10,
+        figure_size=(6.4, 8.2),
         dpi=300,
+        show=False,
     )

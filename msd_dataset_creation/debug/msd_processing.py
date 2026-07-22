@@ -8,8 +8,8 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from shapely.geometry import JOIN_STYLE
 
-from utils_msd import load_pickle
-from constants_msd import ROOM_NAMES
+from MZA_Thesis.msd_dataset_creation.debug.utils_msd import load_pickle
+from MZA_Thesis.msd_dataset_creation.debug.constants_msd import ROOM_NAMES
 
 
 # ============================================================

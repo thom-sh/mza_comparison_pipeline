@@ -24,7 +24,12 @@ PROJECT_DIR = Path(__file__).resolve().parent
 # .../mza_sensitivity_analysis
 REPO_DIR = PROJECT_DIR.parent
 
-RESULTS_ROOT = PROJECT_DIR / "sa_results" / "sa_main"
+# RESULTS_ROOT = PROJECT_DIR / "sa_results" / "sa_main"
+from pathlib import Path
+
+RESULTS_ROOT = Path(
+    r"C:\WF\Thomas Sharon\Floorplan_Dataset\Sensitivity Analysis\results\sa_results"
+)
 
 BUILDING_DATA_PKL = REPO_DIR / "data" / "sa_building_data" / "building_data_merged.pkl"
 BUILDING_DATA_CSV = REPO_DIR / "data" / "sa_building_data" / "building_data_merged.csv"
@@ -63,6 +68,9 @@ SHOW_PLOT_TITLES = False
 # True  = also overlay the area-weighted mean temperature as a thicker line.
 INCLUDE_MEAN_IN_ZONE_TEMPERATURE_PLOT = False
 
+OVERHEATING_THRESHOLD_C = 26.0
+DEG_C = r"$^\circ\mathrm{C}$"
+
 # Thesis figure sizes, full text width.
 FIGSIZE_SINGLE = (6.4, 2.85)
 FIGSIZE_PEAK = (6.4, 3.65)
@@ -91,9 +99,9 @@ VARIANT_STYLES: dict[str, dict[str, object]] = {
 }
 
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
-    "mathtext.fontset": "stix",
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
+    "axes.unicode_minus": False,
     "font.size": 10,
     "axes.labelsize": 10,
     "axes.titlesize": 10,
@@ -909,8 +917,10 @@ def plot_peak_heating_with_temperature(
     if SHOW_PLOT_TITLES:
         ax_heat.set_title(f"{EVENT_WINDOW_DAYS}-day peak heating event window", pad=4)
 
-    ax_heat.set_ylabel("Heating load [kW]")
-    ax_temp.set_ylabel("Weighted mean\nair temperature [°C]")
+    ax_heat.set_ylabel("Heating load in kW")
+    ax_temp.set_ylabel(
+    f"Weighted mean\nair temperature in {DEG_C}"
+    )
     ax_temp.set_xlabel("Time")
 
     # One shared legend above the figure.
@@ -939,22 +949,29 @@ def plot_overheating_weighted_mean_temperature(
     end: pd.Timestamp,
     output_name: str,
 ) -> Path:
-    """Two-panel overheating event plot.
-
-    Top panel: total internal gains [kW].
-    Bottom panel: area-weighted mean indoor air temperature [°C].
+    """
+    Plot the area-weighted mean indoor air temperature during the
+    selected overheating event window.
     """
 
-    fig, (ax_temp, ax_gains) = plt.subplots(
-        2,
+    # Reduce the figure height because only one panel is plotted.
+    fig, ax_temp = plt.subplots(
         1,
-        figsize=FIGSIZE_OVERHEAT,
-        sharex=True,
-        gridspec_kw={"height_ratios": [1.0, 1.0], "hspace": 0.12},
+        1,
+        figsize=(
+            FIGSIZE_OVERHEAT[0],
+            FIGSIZE_OVERHEAT[1] * 0.58,
+        ),
     )
 
     for variant in SELECTED_VARIANTS:
-        df_v = subset_window(median_profiles, start, end, variant)
+        df_v = subset_window(
+            median_profiles,
+            start,
+            end,
+            variant,
+        )
+
         if df_v.empty:
             continue
 
@@ -962,15 +979,6 @@ def plot_overheating_weighted_mean_temperature(
         color = style.get("color", None)
         linestyle = style.get("linestyle", "-")
         label = str(style.get("label", variant))
-
-        ax_gains.plot(
-            df_v["datetime"],
-            df_v["internal_gains_kW"],
-            color=color,
-            linestyle=linestyle,
-            linewidth=1.1,
-            label=label,
-        )
 
         ax_temp.plot(
             df_v["datetime"],
@@ -981,55 +989,153 @@ def plot_overheating_weighted_mean_temperature(
             label=label,
         )
 
+    # Overheating threshold
     ax_temp.axhline(
         OVERHEATING_THRESHOLD_C,
         color=THESIS_COLORS["threshold"],
         linestyle="--",
         linewidth=0.9,
-        label=f"{OVERHEATING_THRESHOLD_C:g} °C threshold",
+        label=f"{OVERHEATING_THRESHOLD_C:g} {DEG_C} threshold",
     )
 
-    for ax in (ax_gains, ax_temp):
-        ax.set_xlim(start, end)
-        style_axis(ax)
-        format_event_axis(ax)
+    ax_temp.set_xlim(start, end)
+    style_axis(ax_temp)
+    format_event_axis(ax_temp)
 
     if SHOW_PLOT_TITLES:
-        ax_gains.set_title(
+        ax_temp.set_title(
             f"{EVENT_WINDOW_DAYS}-day overheating event window",
             pad=4,
         )
 
-    ax_gains.set_ylabel("Internal gains [kW]")
-    ax_temp.set_ylabel("Weighted mean\nair temperature [°C]")
+    ax_temp.set_ylabel(
+        f"Weighted mean\nair temperature in {DEG_C}"
+    )
     ax_temp.set_xlabel("Time")
 
-    handles, labels = ax_gains.get_legend_handles_labels()
-    threshold_handle = Line2D(
-        [0],
-        [0],
-        color=THESIS_COLORS["threshold"],
-        linestyle="--",
-        linewidth=0.9,
-        label=f"{OVERHEATING_THRESHOLD_C:g} °C threshold",
-    )
+    # Shared legend above the plot
+    handles, labels = ax_temp.get_legend_handles_labels()
 
     fig.legend(
-        handles + [threshold_handle],
-        labels + [f"{OVERHEATING_THRESHOLD_C:g} °C threshold"],
+        handles,
+        labels,
         loc="upper center",
-        bbox_to_anchor=(0.70, 1.02),
-        ncol=5,
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=min(len(handles), 5),
         frameon=False,
         handlelength=1.8,
         columnspacing=0.9,
     )
 
-    fig.subplots_adjust(left=0.105, right=0.995, bottom=0.15, top=0.88)
+    fig.subplots_adjust(
+        left=0.105,
+        right=0.995,
+        bottom=0.22,
+        top=0.80,
+    )
 
     out_path = OUTPUT_DIR / output_name
     savefig(fig, out_path)
+
     return out_path
+
+# def plot_overheating_weighted_mean_temperature(
+#     median_profiles: pd.DataFrame,
+#     start: pd.Timestamp,
+#     end: pd.Timestamp,
+#     output_name: str,
+# ) -> Path:
+#     """Two-panel overheating event plot.
+
+#     Top panel: total internal gains [kW].
+#     Bottom panel: area-weighted mean indoor air temperature [°C].
+#     """
+
+#     fig, (ax_temp, ax_gains) = plt.subplots(
+#         2,
+#         1,
+#         figsize=FIGSIZE_OVERHEAT,
+#         sharex=True,
+#         gridspec_kw={"height_ratios": [1.0, 1.0], "hspace": 0.12},
+#     )
+
+#     for variant in SELECTED_VARIANTS:
+#         df_v = subset_window(median_profiles, start, end, variant)
+#         if df_v.empty:
+#             continue
+
+#         style = VARIANT_STYLES.get(variant, {})
+#         color = style.get("color", None)
+#         linestyle = style.get("linestyle", "-")
+#         label = str(style.get("label", variant))
+
+#         ax_gains.plot(
+#             df_v["datetime"],
+#             df_v["internal_gains_kW"],
+#             color=color,
+#             linestyle=linestyle,
+#             linewidth=1.1,
+#             label=label,
+#         )
+
+#         ax_temp.plot(
+#             df_v["datetime"],
+#             df_v["area_weighted_tair_C"],
+#             color=color,
+#             linestyle=linestyle,
+#             linewidth=1.1,
+#             label=label,
+#         )
+
+#     ax_temp.axhline(
+#         OVERHEATING_THRESHOLD_C,
+#         color=THESIS_COLORS["threshold"],
+#         linestyle="--",
+#         linewidth=0.9,
+#         label=f"{OVERHEATING_THRESHOLD_C:g} °C threshold",
+#     )
+
+#     for ax in (ax_gains, ax_temp):
+#         ax.set_xlim(start, end)
+#         style_axis(ax)
+#         format_event_axis(ax)
+
+#     if SHOW_PLOT_TITLES:
+#         ax_gains.set_title(
+#             f"{EVENT_WINDOW_DAYS}-day overheating event window",
+#             pad=4,
+#         )
+
+#     ax_gains.set_ylabel("Internal gains in kW")
+#     ax_temp.set_ylabel("Weighted mean\nair temperature in °C")
+#     ax_temp.set_xlabel("Time")
+
+#     handles, labels = ax_gains.get_legend_handles_labels()
+#     threshold_handle = Line2D(
+#         [0],
+#         [0],
+#         color=THESIS_COLORS["threshold"],
+#         linestyle="--",
+#         linewidth=0.9,
+#         label=f"{OVERHEATING_THRESHOLD_C:g} °C threshold",
+#     )
+
+#     fig.legend(
+#         handles + [threshold_handle],
+#         labels + [f"{OVERHEATING_THRESHOLD_C:g} °C threshold"],
+#         loc="upper center",
+#         bbox_to_anchor=(0.70, 1.02),
+#         ncol=5,
+#         frameon=False,
+#         handlelength=1.8,
+#         columnspacing=0.9,
+#     )
+
+#     fig.subplots_adjust(left=0.105, right=0.995, bottom=0.15, top=0.88)
+
+#     out_path = OUTPUT_DIR / output_name
+#     savefig(fig, out_path)
+#     return out_path
 
 def plot_overheating_zone_temperatures(
     median_profiles: pd.DataFrame,
@@ -1099,7 +1205,9 @@ def plot_overheating_zone_temperatures(
 
     threshold_handle = Line2D([0], [0], color=THESIS_COLORS["threshold"], linestyle="--", linewidth=0.9)
     legend_handles.append(threshold_handle)
-    legend_labels.append(f"{OVERHEATING_THRESHOLD_C:g} °C threshold")
+    legend_labels.append(
+        f"{OVERHEATING_THRESHOLD_C:g} {DEG_C} threshold"
+    )
 
     ax.axhline(
         OVERHEATING_THRESHOLD_C,
@@ -1112,7 +1220,9 @@ def plot_overheating_zone_temperatures(
     if SHOW_PLOT_TITLES:
         ax.set_title(f"{EVENT_WINDOW_DAYS}-day overheating event: zone temperatures", pad=4)
 
-    ax.set_ylabel("Zone air\ntemperature [°C]")
+    ax.set_ylabel(
+        f"Zone air\ntemperature in {DEG_C}"
+        )
     ax.set_xlabel("Time")
     ax.set_xlim(start, end)
     style_axis(ax)
@@ -1261,7 +1371,7 @@ def main() -> None:
         median_profiles=median_profiles,
         start=overheat_start,
         end=overheat_end,
-        output_name="event_window_overheating_weighted_mean_temperature_3days_1.pdf",
+        output_name="event_window_overheating_weighted_mean_temperature_3days.pdf",
     )
 
     if median_zone_profiles.empty:

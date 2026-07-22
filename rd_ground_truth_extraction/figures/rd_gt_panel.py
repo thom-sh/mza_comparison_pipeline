@@ -14,9 +14,10 @@ from shapely.ops import unary_union
 # ============================================================
 
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 8,
-    "axes.titlesize": 8,
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
+    "font.size": 10,
+    "axes.titlesize": 10,
     "figure.facecolor": "white",
     "axes.facecolor": "white",
     "savefig.facecolor": "white",
@@ -195,7 +196,7 @@ def plot_single_plan(ax, dwellings, cores, title, pad_ratio):
     ax.set_aspect("equal")
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_title(str(title), pad=0.2, fontsize = 9)
+    ax.set_title(str(title), pad=0.2, fontsize = 10)
 
     for spine in ax.spines.values():
         spine.set_visible(True)

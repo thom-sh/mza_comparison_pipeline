@@ -480,7 +480,7 @@ def plot_overheating_combined_weather_s1_st(df: pd.DataFrame) -> Path | None:
     ax.set_yticklabels(param_order)
     ax.invert_yaxis()
 
-    ax.set_xlabel("Sobol sensitivity index [-]")
+    ax.set_xlabel("Sobol sensitivity index")
 
     if FIXED_XMAX is not None:
         ax.set_xlim(0, FIXED_XMAX)

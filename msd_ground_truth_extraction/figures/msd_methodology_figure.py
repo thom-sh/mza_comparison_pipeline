@@ -58,10 +58,11 @@ from msd_dataset_creation.msd_processing import (
 # Global plot style
 # -----------------------------------------------------------------------------
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 8,
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
+    "font.size": 9,
     "axes.titlesize": 10,
-    "legend.fontsize": 8,
+    "legend.fontsize": 9,
     "axes.titleweight": "normal",
     "figure.facecolor": "white",
     "axes.facecolor": "white",
@@ -252,7 +253,8 @@ def add_panel_label(ax, label: str):
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontweight="normal",
+        fontsize=10,
+        fontweight="bold",
     )
 
 
@@ -434,13 +436,13 @@ def plot_methodology_figure(
     room_legend_ax.legend(
         handles=room_handles,
         loc="upper left",
-        bbox_to_anchor=(-0.15, 0.95),
+        bbox_to_anchor=(-0.35, 0.95),
         frameon=True,
         fancybox=False,
         framealpha=1.0,
         edgecolor="#bdc1c5",
         facecolor="white",
-        fontsize=8,
+        fontsize=9,
         handlelength=1.4,
         handletextpad=0.5,
         borderpad=0.5,
@@ -513,13 +515,13 @@ def plot_methodology_figure(
     dwelling_legend_ax.legend(
         handles=dwelling_handles,
         loc="upper left",
-        bbox_to_anchor=(-0.15, 0.95),
+        bbox_to_anchor=(-0.35, 0.75),
         frameon=True,
         fancybox=False,
         framealpha=1.0,
         edgecolor="#bdc1c5",
         facecolor="white",
-        fontsize=7.5,
+        fontsize=9,
         handlelength=1.4,
         handletextpad=0.5,
         borderpad=0.5,

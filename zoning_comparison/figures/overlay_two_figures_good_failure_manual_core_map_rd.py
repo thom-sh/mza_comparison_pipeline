@@ -134,13 +134,14 @@ SHOW_PREDICTED_ZONE_IDS = False
 PRED_ZONE_ID_FONT_SIZE = 7
 
 plt.rcParams.update({
-    "font.family": "serif",
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
     "font.size": 9,
     "axes.titlesize": 10,
     "axes.labelsize": 9,
     "xtick.labelsize": 8,
     "ytick.labelsize": 8,
-    "legend.fontsize": 8,
+    "legend.fontsize": 9,
     "axes.titleweight": "normal",
     "figure.facecolor": "white",
     "axes.facecolor": "white",

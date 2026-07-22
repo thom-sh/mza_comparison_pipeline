@@ -63,16 +63,15 @@ DWELLING_COLORS = [
 CORE_COLOR = "#5F666D"
 
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.serif": ["Times New Roman", "STIX Two Text", "STIXGeneral", "DejaVu Serif"],
-    "mathtext.fontset": "stix",
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
 
     "font.size": 9,
     "axes.titlesize": 10,
     "axes.labelsize": 9,
     "xtick.labelsize": 9,
     "ytick.labelsize": 9,
-    "legend.fontsize": 8,
+    "legend.fontsize": 9,
 
     "axes.titleweight": "normal",
     "axes.labelweight": "normal",
@@ -563,11 +562,19 @@ def add_panel_label(ax, label):
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontsize=10
+        fontsize=10,
+        fontweight="bold",
     )
 
 
-def add_area_label(ax, geom):
+# Manual label offsets in metres: {polygon_index: (x_offset, y_offset)}
+AREA_LABEL_OFFSETS = {
+    0: (0.0, -0.8),   # Stairwell label
+    1: (1.0, 0.6),   # Dwelling 1 label
+    2: (-1.0, 0.6),    # Dwelling 2 label
+}
+
+def add_area_label(ax, geom, polygon_index):
     area_m2 = geom.area
 
     if area_m2 < MIN_AREA_LABEL_M2:
@@ -576,7 +583,16 @@ def add_area_label(ax, geom):
     pt = geom.representative_point()
     cx, cy = pt.x, pt.y
 
-    label = f"A = {area_m2:.{AREA_LABEL_DECIMALS}f} m²"
+    # Apply a different offset to each polygon
+    x_offset, y_offset = AREA_LABEL_OFFSETS.get(
+        polygon_index,
+        (0.0, 0.0)
+    )
+
+    cx += x_offset
+    cy += y_offset
+
+    label = rf"$A = {area_m2:.{AREA_LABEL_DECIMALS}f}\,\mathrm{{m}}^{{2}}$"
 
     ax.text(
         cx,
@@ -584,14 +600,15 @@ def add_area_label(ax, geom):
         label,
         ha="center",
         va="center",
-        fontsize=7,
+        fontsize=9,
         bbox=dict(
             facecolor="white",
             edgecolor=POLYGON_EDGE_COLOR,
             boxstyle="square,pad=0.30",
             alpha=0.95,
-            linewidth=0.8
-        )
+            linewidth=0.8,
+        ),
+        zorder=10,
     )
 
 
@@ -636,7 +653,7 @@ def plot_digitised_overlay(ax, img_crop, polygons_px, show_box=True):
             f"P{i}",
             ha="center",
             va="center",
-            fontsize=8,
+            fontsize=9,
             bbox=dict(
                 facecolor="white",
                 edgecolor="none",
@@ -681,7 +698,7 @@ def plot_scaled_polygons(ax, polygons_m, show_box=False, show_area=True):
         )
 
         if show_area:
-            add_area_label(ax, geom)
+            add_area_label(ax, geom, polygon_index=i)
 
     set_geometry_limits(ax, temp_records, invert_y=True)
 

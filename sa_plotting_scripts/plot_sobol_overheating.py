@@ -609,7 +609,7 @@ def plot_sobol_s1_st(indices: pd.DataFrame, weather_key: str) -> Path | None:
     ax.set_yticklabels(param_order)
     ax.invert_yaxis()
 
-    ax.set_xlabel("Sobol sensitivity index [-]")
+    ax.set_xlabel("Sobol sensitivity index")
 
     if FIXED_XMAX is not None:
         ax.set_xlim(0, FIXED_XMAX)
@@ -712,7 +712,7 @@ def plot_weather_comparison_ST(indices: pd.DataFrame) -> Path | None:
     ax.set_yticklabels(param_order)
     ax.invert_yaxis()
 
-    ax.set_xlabel(r"Sobol total-order index $S_T$ [-]")
+    ax.set_xlabel(r"Sobol total-order index $S_T$")
 
     if FIXED_XMAX is not None:
         ax.set_xlim(0, FIXED_XMAX)

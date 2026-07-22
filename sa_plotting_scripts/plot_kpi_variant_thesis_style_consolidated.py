@@ -132,7 +132,7 @@ KPI_CONFIGS = [
     {
         "name": "annual_heating_demand",
         "column": "annual_heating_kWh",
-        "ylabel": "Annual heating demand [MWh]",
+        "ylabel": "Annual heating demand in MWh",
         "transform": lambda s: s / 1000.0,
         "filename": "kpi_annual_heating_demand_by_variant_consolidated",
         "title": "Annual heating demand",
@@ -140,7 +140,7 @@ KPI_CONFIGS = [
     {
         "name": "peak_heating_load",
         "column": "peak_heating_kW",
-        "ylabel": "Peak heating load [kW]",
+        "ylabel": "Peak heating load in kW",
         "transform": lambda s: s,
         "filename": "kpi_peak_heating_load_by_variant_consolidated",
         "title": "Peak heating load",
@@ -148,7 +148,7 @@ KPI_CONFIGS = [
     {
         "name": "overheating_hours",
         "column": "overheating_hours_any_zone_gt_26C",
-        "ylabel": "Overheating hours [h]",
+        "ylabel": "Overheating hours in h",
         "transform": lambda s: s,
         "filename": "kpi_overheating_hours_by_variant_consolidated",
         "title": "Overheating hours",
@@ -156,7 +156,7 @@ KPI_CONFIGS = [
     {
         "name": "max_interzonal_spread",
         "column": "max_interzone_spread_C",
-        "ylabel": "Maximum interzonal spread [K]",
+        "ylabel": "Maximum interzonal spread in K",
         "transform": lambda s: s,
         "filename": "kpi_max_interzonal_spread_by_variant_consolidated",
         "title": "Maximum interzonal spread",
@@ -164,7 +164,7 @@ KPI_CONFIGS = [
     {
         "name": "mean_interzonal_spread",
         "column": "mean_interzone_spread_C",
-        "ylabel": "Mean interzonal spread [K]",
+        "ylabel": "Mean interzonal spread in K",
         "transform": lambda s: s,
         "filename": "kpi_mean_interzonal_spread_by_variant_consolidated",
         "title": "Mean interzonal spread",
@@ -172,7 +172,7 @@ KPI_CONFIGS = [
     {
         "name": "maximum_air_temperature",
         "column": "max_tair_C",
-        "ylabel": "Maximum air temperature [°C]",
+        "ylabel": "Maximum air temperature in $^\circ\mathrm{C}$",
         "transform": lambda s: s,
         "filename": "kpi_maximum_air_temperature_by_variant_consolidated",
         "title": "Maximum air temperature",
@@ -190,7 +190,9 @@ def apply_thesis_style() -> None:
         "figure.dpi": DPI,
         "savefig.dpi": DPI,
 
-        "font.family": "serif",
+        "font.family": "cmr10",
+        "mathtext.fontset": "cm",
+        "axes.unicode_minus": False,
         "font.size": 10,
         "axes.labelsize": 10,
         "axes.titlesize": 10,
@@ -467,14 +469,14 @@ def plot_kpi_consolidated(summary: pd.DataFrame, config: dict) -> Path:
             [0],
             color=COLORS["error"],
             linewidth=0.9,
-            label="P5–P95 range",
+            label="P5\u2013P95 range",
         ),
     ]
 
-    ax.legend(
+    legend = ax.legend(
         handles=legend_handles,
         loc="upper right",
-        bbox_to_anchor=(1.0, 0.975 if not SHOW_KPI_TITLE else 1.18),
+        bbox_to_anchor=(1.0, 1.1 if not SHOW_KPI_TITLE else 1.18),
         ncol=5,
         frameon=False,
         handlelength=1.35,
@@ -482,6 +484,11 @@ def plot_kpi_consolidated(summary: pd.DataFrame, config: dict) -> Path:
         handletextpad=0.35,
         borderaxespad=0.0,
     )
+
+    # Use a font that supports the proper en dash
+    for text in legend.get_texts():
+        if text.get_text() == "P5\u2013P95 range":
+            text.set_fontfamily("DejaVu Serif")
 
     fig.subplots_adjust(
         left=0.095,

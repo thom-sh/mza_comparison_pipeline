@@ -107,7 +107,8 @@ THESIS_COLORS = {
 }
 
 plt.rcParams.update({
-    "font.family": "serif",
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
     "font.size": 10,
     "axes.titlesize": 10,
     "axes.labelsize": 10,
@@ -340,7 +341,7 @@ def plot_diagnostics(df, out_dir=None):
         frameon=True,
         edgecolor=THESIS_COLORS["legend_edge"],
         loc="lower right",
-        fontsize=7,
+        fontsize=9,
     )
 
     fig.tight_layout()

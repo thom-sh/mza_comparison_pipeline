@@ -51,9 +51,8 @@ EXTRA_ROTATION_BY_VARIANT = {
 # STYLE
 # ============================================================
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.serif": ["Times New Roman", "STIX Two Text", "STIXGeneral", "DejaVu Serif"],
-    "mathtext.fontset": "stix",
+    "font.family": "cmr10",
+    "mathtext.fontset": "cm",
 
     "font.size": 10,
     "axes.titlesize": 10,
@@ -355,7 +354,7 @@ def draw_aligned_row_labels(fig, axes, variant_order):
                 x, y, vkey,
                 ha="center",
                 va="top",
-                fontsize=10,
+                fontsize=22,
                 fontweight="normal",
                 family="serif",
             )

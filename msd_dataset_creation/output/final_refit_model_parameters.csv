@@ -1,0 +1,5 @@
+selected_model,target_type,regime,lower_bound_A_fp,upper_bound_A_fp,alpha_intercept,beta_slope,equation
+Piecewise linear K4,mean,1,-inf,177.3575,1.242955764156207,0.4178197360490551,y_hat = 1.2430 + 0.417820 * A_fp
+Piecewise linear K4,mean,2,177.3575,209.65,20.072505430166792,0.31768068484564016,y_hat = 20.0725 + 0.317681 * A_fp
+Piecewise linear K4,mean,3,209.65,300.9475,123.78816454204787,-0.16091458443906684,y_hat = 123.7882 + -0.160915 * A_fp
+Piecewise linear K4,mean,4,300.9475,inf,30.04547621205853,0.12605512783243436,y_hat = 30.0455 + 0.126055 * A_fp

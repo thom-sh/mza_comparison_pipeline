@@ -4,10 +4,10 @@ import networkx as nx
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
-from utils_msd import load_pickle
+from MZA_Thesis.msd_dataset_creation.debug.utils_msd import load_pickle
 
 # === import your existing processing functions (topology-based core) ===
-from msd_processing import (
+from MZA_Thesis.msd_dataset_creation.debug.msd_processing import (
     get_type_sets,                          # returns (name_to_idx, private_types, auxiliary_types)
     remove_auxiliary_rooms,
     detect_apartments_and_core_nodes,       # returns (apartments, core_nodes)
