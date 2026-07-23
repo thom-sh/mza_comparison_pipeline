@@ -18,10 +18,10 @@ from matplotlib.patches import (
 
 def setup_style():
     plt.rcParams.update({
-        "font.family": "serif",
-        "font.serif": ["Times New Roman", "STIXGeneral", "DejaVu Serif"],
-        "mathtext.fontset": "stix",
-        "font.size": 10,
+        "font.family": "cmr10",
+        "mathtext.fontset": "cm",
+        "axes.unicode_minus": False,
+        "font.size": 15,
         "axes.linewidth": 0.8,
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
@@ -85,7 +85,7 @@ def add_header(ax, x, y, w, text):
         text,
         ha="center",
         va="center",
-        fontsize=11,
+        fontsize=16,
     )
 
 
@@ -212,7 +212,7 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
             title,
             ha="left",
             va="center",
-            fontsize=10,
+            fontsize=15,
             zorder=4,
         )
 
@@ -222,7 +222,7 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
             subtitle,
             ha="left",
             va="center",
-            fontsize=8.5,
+            fontsize=12,
             color="0.35",
             zorder=4,
         )
@@ -233,7 +233,7 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
         "Urban input data",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=15,
     )
 
 
@@ -258,7 +258,7 @@ def draw_footprint(ax, x, y, scale=1.0):
         "Building footprint",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=15,
     )
 
 
@@ -316,7 +316,7 @@ def draw_bsp_tree_final_logic(ax, x, y, scale=1.0):
                 zorder=2,
             )
         )
-        ax.text(xx, yy, label, ha="center", va="center", fontsize=8, zorder=3)
+        ax.text(xx, yy, label, ha="center", va="center", fontsize=12, zorder=3)
 
     ax.text(
         x + 0.78 * scale,
@@ -324,7 +324,7 @@ def draw_bsp_tree_final_logic(ax, x, y, scale=1.0):
         "BSP tree",
         ha="center",
         va="bottom",
-        fontsize=10,
+        fontsize=15,
     )
 
 
@@ -462,7 +462,7 @@ def draw_leaf_based_apartment_core_layout(ax, x, y, scale=1.0):
         "Dwelling and stairwell zone layout",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=15,
     )
 
 
@@ -669,7 +669,7 @@ def draw_3d_building(ax, x, y, scale=1.0):
         "Multi-zone building model",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=15,
     )
 
 
@@ -695,7 +695,7 @@ def draw_teaser(ax, x, y, scale=1.0):
         "TEASER",
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=15,
         fontweight="bold",
         color="0.35",
     )
@@ -705,7 +705,7 @@ def draw_teaser(ax, x, y, scale=1.0):
         "VDI 6007",
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=15,
         color="0.35",
     )
 
@@ -731,7 +731,7 @@ def draw_lpg_bars(ax, x, y, scale=1.0):
         "LPG\nprofiles",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=15,
     )
 
 
@@ -753,7 +753,7 @@ def draw_tabula(ax, x, y, scale=1.0):
         "TABULA",
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=15,
         fontweight="bold",
     )
 
@@ -789,7 +789,7 @@ def draw_simulation_box(ax, x, y, scale=1.0):
         "AixLib /\nModelica",
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=15,
     )
 
     xx = np.linspace(0, 1, 100)
@@ -815,7 +815,7 @@ def draw_simulation_box(ax, x, y, scale=1.0):
         "simulation\noutputs",
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=15,
     )
 
     ax.text(
@@ -824,7 +824,7 @@ def draw_simulation_box(ax, x, y, scale=1.0):
         "heat load, temperatures,\ncomfort indicators",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=15,
     )
 
 
@@ -842,9 +842,9 @@ def draw_bottom_process_line(ax):
     add_arrow(ax, 4.95, y, 5.05, y, lw=1.3)
     add_arrow(ax, 9.75, y, 9.85, y, lw=1.3)
 
-    ax.text(2.80, y - 0.1, "Input data", ha="center", va="top", fontsize=10)
-    ax.text(7.45, y - 0.1, "Python", ha="center", va="top", fontsize=10)
-    ax.text(12.35, y - 0.1, "TEASER -- AixLib / Modelica", ha="center", va="top", fontsize=10)
+    ax.text(2.80, y - 0.1, "Input data", ha="center", va="top", fontsize=15)
+    ax.text(7.45, y - 0.1, "Python", ha="center", va="top", fontsize=15)
+    ax.text(12.35, y - 0.1, "TEASER -- AixLib / Modelica", ha="center", va="top", fontsize=15)
 
 
 # ============================================================
@@ -856,7 +856,7 @@ def create_mza_workflow_figure(output_dir: Path, output_name: str):
 
     # Compact one-row version for LaTeX insertion with width=\textwidth.
     # The figure ratio and x/y axis ratio are matched to avoid visual stretching.
-    fig, ax = plt.subplots(figsize=(12.5, 3.0), dpi=300)
+    fig, ax = plt.subplots(figsize=(12, 3), dpi=300)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     thumbnail_placements = []
 
