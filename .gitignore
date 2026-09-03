@@ -28,3 +28,4 @@ repo_tree.txt
 # OS files
 .DS_Store
 Thumbs.db
+gml_footprint_replacement/data.zip

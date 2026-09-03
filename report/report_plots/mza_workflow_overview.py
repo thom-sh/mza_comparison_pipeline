@@ -21,7 +21,7 @@ def setup_style():
         "font.family": "cmr10",
         "mathtext.fontset": "cm",
         "axes.unicode_minus": False,
-        "font.size": 15,
+        "font.size": 1,
         "axes.linewidth": 0.8,
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
@@ -74,7 +74,7 @@ def add_header(ax, x, y, w, text):
             (x, y),
             w,
             0.42,
-            facecolor="#e9ecef",
+            facecolor="none",
             edgecolor="none",
             zorder=0,
         )
@@ -85,7 +85,7 @@ def add_header(ax, x, y, w, text):
         text,
         ha="center",
         va="center",
-        fontsize=16,
+        fontsize=13,
     )
 
 
@@ -97,7 +97,7 @@ def add_arrow(ax, x1, y1, x2, y2, lw=1.5):
             arrowstyle="-|>",
             mutation_scale=13,
             linewidth=lw,
-            color="0.45",
+            color="black",
         )
     )
 
@@ -167,9 +167,9 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
     PDF thumbnails are inserted later into the saved PDF as vector PDF objects.
     """
 
-    card_w = 2.35 * scale
+    card_w = 2.75 * scale
     card_h = 0.58 * scale
-    gap = 0.22 * scale
+    gap = 0.38 * scale
 
     edge_color = "black"
     fill_color = "#f7f7f7"
@@ -177,7 +177,7 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
     sources = [
         ("CityGML / LoD2", "geometry", CITYGML_THUMBNAIL_PDF),
         ("OpenStreetMap", "address / access", OSM_THUMBNAIL_PDF),
-        ("Building stock data", "apartment size, period", BUILDING_STOCK_THUMBNAIL_PDF),
+        ("Building stock data", "apartment size", BUILDING_STOCK_THUMBNAIL_PDF),
     ]
 
     for i, (title, subtitle, thumb_pdf) in enumerate(sources):
@@ -212,7 +212,7 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
             title,
             ha="left",
             va="center",
-            fontsize=15,
+            fontsize=12,
             zorder=4,
         )
 
@@ -223,7 +223,7 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
             ha="left",
             va="center",
             fontsize=12,
-            color="0.35",
+            color="black",
             zorder=4,
         )
 
@@ -233,7 +233,7 @@ def draw_input_sources(ax, x, y, scale=1.0, thumbnail_placements=None):
         "Urban input data",
         ha="center",
         va="top",
-        fontsize=15,
+        fontsize=13,
     )
 
 
@@ -255,10 +255,10 @@ def draw_footprint(ax, x, y, scale=1.0):
     ax.text(
         x + w / 2,
         y - 0.18 * scale,
-        "Building footprint",
+        "Building\nfootprint",
         ha="center",
         va="top",
-        fontsize=15,
+        fontsize=13,
     )
 
 
@@ -316,7 +316,7 @@ def draw_bsp_tree_final_logic(ax, x, y, scale=1.0):
                 zorder=2,
             )
         )
-        ax.text(xx, yy, label, ha="center", va="center", fontsize=12, zorder=3)
+        ax.text(xx, yy, label, ha="center", va="center", fontsize=10, zorder=3)
 
     ax.text(
         x + 0.78 * scale,
@@ -324,7 +324,7 @@ def draw_bsp_tree_final_logic(ax, x, y, scale=1.0):
         "BSP tree",
         ha="center",
         va="bottom",
-        fontsize=15,
+        fontsize=12,
     )
 
 
@@ -457,12 +457,12 @@ def draw_leaf_based_apartment_core_layout(ax, x, y, scale=1.0):
     )
 
     ax.text(
-        x + building_width / 1.5,
+        x + building_width / 2,
         y - 0.18 * scale,
-        "Dwelling and stairwell zone layout",
+        "Dwelling and stairwell\nzone layout",
         ha="center",
         va="top",
-        fontsize=15,
+        fontsize=12,
     )
 
 
@@ -666,10 +666,10 @@ def draw_3d_building(ax, x, y, scale=1.0):
     ax.text(
         x + front_w / 2 + 0.12 * scale,
         y - 0.18 * scale,
-        "Multi-zone building model",
+        "Multi-zone\nbuilding model",
         ha="center",
         va="top",
-        fontsize=15,
+        fontsize=12.5,
     )
 
 
@@ -695,7 +695,7 @@ def draw_teaser(ax, x, y, scale=1.0):
         "TEASER",
         ha="center",
         va="center",
-        fontsize=15,
+        fontsize=12,
         fontweight="bold",
         color="0.35",
     )
@@ -705,7 +705,7 @@ def draw_teaser(ax, x, y, scale=1.0):
         "VDI 6007",
         ha="center",
         va="center",
-        fontsize=15,
+        fontsize=10,
         color="0.35",
     )
 
@@ -731,7 +731,7 @@ def draw_lpg_bars(ax, x, y, scale=1.0):
         "LPG\nprofiles",
         ha="center",
         va="top",
-        fontsize=15,
+        fontsize=10,
     )
 
 
@@ -753,7 +753,7 @@ def draw_tabula(ax, x, y, scale=1.0):
         "TABULA",
         ha="center",
         va="center",
-        fontsize=15,
+        fontsize=10,
         fontweight="bold",
     )
 
@@ -789,7 +789,7 @@ def draw_simulation_box(ax, x, y, scale=1.0):
         "AixLib /\nModelica",
         ha="center",
         va="center",
-        fontsize=15,
+        fontsize=10,
     )
 
     xx = np.linspace(0, 1, 100)
@@ -815,7 +815,7 @@ def draw_simulation_box(ax, x, y, scale=1.0):
         "simulation\noutputs",
         ha="center",
         va="center",
-        fontsize=15,
+        fontsize=10,
     )
 
     ax.text(
@@ -824,7 +824,7 @@ def draw_simulation_box(ax, x, y, scale=1.0):
         "heat load, temperatures,\ncomfort indicators",
         ha="center",
         va="top",
-        fontsize=15,
+        fontsize=10,
     )
 
 
@@ -833,18 +833,18 @@ def draw_simulation_box(ax, x, y, scale=1.0):
 # ============================================================
 
 def draw_bottom_process_line(ax):
-    y = 2.3
+    y = 2.28
 
-    ax.plot([0.65, 4.95], [y, y], color="0.55", linewidth=2.0)
-    ax.plot([5.15, 9.75], [y, y], color="0.55", linewidth=2.0)
-    ax.plot([9.95, 14.70], [y, y], color="0.55", linewidth=2.0)
+    ax.plot([0.45, 4.75], [y, y], color="black", linewidth=1.5)
+    ax.plot([5.0, 9.45], [y, y], color="black", linewidth=1.5)
+    ax.plot([9.6, 14.25], [y, y], color="black", linewidth=1.5)
 
-    add_arrow(ax, 4.95, y, 5.05, y, lw=1.3)
-    add_arrow(ax, 9.75, y, 9.85, y, lw=1.3)
+    add_arrow(ax, 4.55, y, 4.95, y, lw=1.5)
+    add_arrow(ax, 9.35, y, 9.55, y, lw=1.5)
 
-    ax.text(2.80, y - 0.1, "Input data", ha="center", va="top", fontsize=15)
-    ax.text(7.45, y - 0.1, "Python", ha="center", va="top", fontsize=15)
-    ax.text(12.35, y - 0.1, "TEASER -- AixLib / Modelica", ha="center", va="top", fontsize=15)
+    ax.text(2.80, y - 0.1, "Input data", ha="center", va="top", fontsize=12)
+    ax.text(7.45, y - 0.1, "Python", ha="center", va="top", fontsize=12)
+    ax.text(12.35, y - 0.1, "TEASER -- AixLib / Modelica", ha="center", va="top", fontsize=12)
 
 
 # ============================================================
@@ -856,23 +856,23 @@ def create_mza_workflow_figure(output_dir: Path, output_name: str):
 
     # Compact one-row version for LaTeX insertion with width=\textwidth.
     # The figure ratio and x/y axis ratio are matched to avoid visual stretching.
-    fig, ax = plt.subplots(figsize=(12, 3), dpi=300)
+    fig, ax = plt.subplots(figsize=(9.85, 3.4), dpi=300)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     thumbnail_placements = []
 
-    ax.set_xlim(0.3, 15.)
-    ax.set_ylim(2.0, 6.0)
+    ax.set_xlim(0.415, 14.35)
+    ax.set_ylim(2, 6.0)
     ax.axis("off")
 
-    add_header(ax, 0.45, 5.45, 4.55, "Data aggregation and preprocessing")
+    add_header(ax, 0.0, 5.45, 5.55, "Data aggregation and preprocessing")
     add_header(ax, 5.15, 5.45, 4.55, "Automatic zoning")
-    add_header(ax, 9.95, 5.45, 4.75, "Thermal enrichment and simulation")
+    add_header(ax, 9.55, 5.45, 4.75, "Thermal enrichment and simulation")
 
-    for x_sep in [5.09, 9.85]:
+    for x_sep in [4.95, 9.50]:
         ax.plot(
             [x_sep, x_sep],
-            [2.4, 5.25],
-            color="0.84",
+            [2.4, 5.45],
+            color="black",
             linewidth=1.0,
             linestyle="--",
         )
@@ -884,24 +884,24 @@ def create_mza_workflow_figure(output_dir: Path, output_name: str):
         ax,
         0.55,
         2.90,
-        scale=0.88,
+        scale=1,
         thumbnail_placements=thumbnail_placements,
     )
-    add_arrow(ax, 2.80, 3.95, 3.45, 3.95)
-    draw_footprint(ax, 3.60, 3.48, scale=0.90)
+    add_arrow(ax, 3.35, 3.95, 3.70, 3.95)
+    draw_footprint(ax, 3.70, 3.58, scale=0.7)
 
     # --------------------------------------------------------
     # Stage 2: automatic zoning
     # --------------------------------------------------------
     zoning_group_center_x = 6.15
 
-    bsp_tree_scale = 0.60
+    bsp_tree_scale = 0.70
     bsp_tree_x = zoning_group_center_x - 0.78 * bsp_tree_scale
     bsp_tree_y = 3.90
 
     draw_bsp_tree_final_logic(ax, bsp_tree_x, bsp_tree_y, scale=bsp_tree_scale)
 
-    layout_scale = 0.75
+    layout_scale = 0.65
     layout_width = 12.0 * 0.19 * layout_scale
     layout_x = zoning_group_center_x - layout_width / 2
     layout_y = 2.80
@@ -910,9 +910,9 @@ def create_mza_workflow_figure(output_dir: Path, output_name: str):
 
     building_x = 7.75
     building_y = 2.82
-    building_scale = 0.78
+    building_scale = 0.65
 
-    add_arrow(ax, 7.2, 3.95, 7.65, 3.95)
+    add_arrow(ax, 6.8, 3.95, 7.35, 3.95)
     draw_3d_building(ax, building_x, building_y, scale=building_scale)
 
     # --------------------------------------------------------
@@ -928,76 +928,76 @@ def create_mza_workflow_figure(output_dir: Path, output_name: str):
     # )
 
     # TABULA and LPG PDF logos
-    tabula_extent = (9.75, 11.20, 4.30, 4.95)
+    tabula_extent = (9.75, 11.20, 4.0, 5.95)
     thumbnail_placements.append((TABULA_LOGO_PDF, tabula_extent))
 
-    lpg_extent = (9.75, 11.20, 3.20, 3.85)
+    lpg_extent = (9.45, 11.15, 3.00, 3.75)
     thumbnail_placements.append((LPG_LOGO_PDF, lpg_extent))
 
-    ax.text(10.45, 3.90, "+", ha="center", va="center", fontsize=13, color="0.35")
+    ax.text(10.45, 3.90, "+", ha="center", va="center", fontsize=13, color="black")
 
     # Optional labels below the logos
     ax.text(
         10.5,
-        4.20,
-        "Typology / Envelope",
+        4.50,
+        "Typology /\nEnvelope",
         ha="center",
         va="top",
-        fontsize=9,
+        fontsize=13,
     )
 
     ax.text(
-        10.5,
-        3.15,
-        "LPG usage profiles",
+        10.3,
+        2.95,
+        "LPG\nusage profiles",
         ha="center",
         va="top",
-        fontsize=9,
+        fontsize=12,
     )
 
     # Arrow from TABULA/LPG to TEASER
-    add_arrow(ax, 11.1, 3.95, 11.45, 3.95)
+    add_arrow(ax, 10.8, 3.85, 11.25, 3.85)
 
     # TEASER parameterisation
-    teaser_extent = (11.0, 12.80, 3.75, 4.55)
+    teaser_extent = (10.65, 12.45, 3.55, 4.35)
     thumbnail_placements.append((TEASER_LOGO_PDF, teaser_extent))
 
     ax.text(
-        11.9,
-        3.62,
+        11.55,
+        3.42,
         "TEASER\nparameterisation",
         ha="center",
         va="top",
-        fontsize=9,
+        fontsize=12,
     )
 
     # Arrow from TEASER to simulation box
-    add_arrow(ax, 12.45, 3.95, 12.80, 3.95)
+    add_arrow(ax, 12.05, 3.85, 12.50, 3.85)
 
     # Modelica / AixLib model thumbnail
-    modelica_extent = (12.95, 14.71, 3.95, 5.55)
+    modelica_extent = (12.25, 14.10, 3.95, 5.55)
     thumbnail_placements.append((MODELICA_LOGO_PDF, modelica_extent))
 
     ax.text(
-        13.78,
+        13.30,
         4.08,
         "AixLib-based\nModelica model",
         ha="center",
         va="top",
-        fontsize=9,
+        fontsize=12,
     )
 
     # Simulation output graph thumbnail
-    graph_extent = (13.1, 14.56, 2.36, 3.75)
+    graph_extent = (12.4, 14.26, 2.36, 3.75)
     thumbnail_placements.append((OUTPUT_GRAPH_PDF, graph_extent))
 
     ax.text(
-        13.78,
+        13.28,
         2.50,
         "simulation outputs",
         ha="center",
         va="top",
-        fontsize=9,
+        fontsize=12,
     )
 
     draw_bottom_process_line(ax)

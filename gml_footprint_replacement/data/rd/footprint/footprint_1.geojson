@@ -1,0 +1,39 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "building_id": 1,
+        "description": "Oriented footprint (new pickle format)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1.9774236739130586,
+              17.356581804988764
+            ],
+            [
+              1.941490243173675,
+              27.337008236229956
+            ],
+            [
+              28.99627503039969,
+              27.48687196497323
+            ],
+            [
+              29.07502832949889,
+              17.48520297937765
+            ],
+            [
+              1.9774236739130586,
+              17.356581804988764
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

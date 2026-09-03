@@ -147,7 +147,7 @@ KPI_CONFIGS = [
     },
     {
         "name": "overheating_hours",
-        "column": "overheating_hours_any_zone_gt_26C",
+        "column": "overheating_hours_meanTair_gt_26C",
         "ylabel": "Overheating hours in h",
         "transform": lambda s: s,
         "filename": "kpi_overheating_hours_by_variant_consolidated",
