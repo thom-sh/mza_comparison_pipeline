@@ -1,5 +1,6 @@
 # MZA Validation Repository
 
+Master thesis work conducted at the DLR Institute of Solar Research.
 This repository contains the code, processed validation data, and plotting scripts used for the geometric validation and the scripts for the sensitivity-analysis plots:
 
 **Impact of Automated Thermal Zoning on Building Energy Simulations: Ground-Truth Validation and Sensitivity Analysis**
